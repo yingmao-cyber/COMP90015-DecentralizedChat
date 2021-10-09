@@ -3,6 +3,7 @@ package client;
 import client_command.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import local_command.CreateRoomCommand;
 import server_command.*;
 
 import java.lang.reflect.Type;
@@ -15,6 +16,7 @@ public class CommandFactory {
     private final ArrayList<String> commandRequiresNoInput = new ArrayList<>();
 
     public CommandFactory(ChatClient chatClient){
+        this.commandRequiresNoInput.add("listneighbors");
         this.commandRequiresNoInput.add("list");
         this.commandRequiresNoInput.add("quit");
         this.chatClient = chatClient;
@@ -75,14 +77,12 @@ public class CommandFactory {
             switch(type){
                 case "join":
                     return new JoinCommand(arg);
+                case "listneighbors":
+                    return new ListNeighborCommand();
                 case "who":
                     return new WhoCommand(arg);
                 case "list":
                     return new ListCommand();
-                case "createroom":
-                    // mark the client is requesting to create a new room
-                    this.chatClient.requestNewRoom(arg);
-                    return new CreateRoomCommand(arg);
                 case "delete":
                     this.chatClient.requestDeleteRoom(arg);
                     return new DeleteCommand(arg);
@@ -109,6 +109,12 @@ public class CommandFactory {
      * @return
      */
     public ClientCommand convertServerMessageToCommand(String jsonMessage){
+        /** return: {"neighbors": ["192.168.1.10:4444"]} */
+        boolean neighbors = gson.fromJson(jsonMessage, JsonObject.class).has("neighbors");
+        if (neighbors){
+            return this.generateCommand(jsonMessage, NeighborCommand.class);
+        }
+
         String type = gson.fromJson(jsonMessage, JsonObject.class).get("type").getAsString();
 
         switch(type){

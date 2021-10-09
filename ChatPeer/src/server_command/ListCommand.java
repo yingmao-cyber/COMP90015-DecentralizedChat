@@ -22,7 +22,6 @@ public class ListCommand extends ServerCommand{
 
     public static String buildRoomList(ChatManager chatManager, String ignore, String addition){
         Gson gson = new Gson();
-        chatManager.removeEmptyRoomWithOwnerDropped();
 
         RoomListCommand roomListCommand = new RoomListCommand(chatManager.getRoomsInfo(ignore, addition));
         return gson.toJson(roomListCommand);

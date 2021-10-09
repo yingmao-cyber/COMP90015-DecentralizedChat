@@ -42,7 +42,8 @@ public class LocalCommandFactory {
                         specifiedLocalPort = Integer.parseInt(inputArray.get(2));
                     }
                     return new ConnectCommand(remoteServerHost, specifiedLocalPort );
-
+                case "createroom":
+                    return new CreateRoomCommand(inputArray.get(1));
                 default:
                     return null;
             }

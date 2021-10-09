@@ -1,6 +1,7 @@
 package local_command;
 
 import client.ChatClient;
+import server.ChatManager;
 
 import java.io.IOException;
 
@@ -14,7 +15,7 @@ public class ConnectCommand extends LocalCommand {
    }
 
     @Override
-    public void execute(ChatClient chatClient){
+    public void execute(ChatClient chatClient, ChatManager chatManager){
        try {
            chatClient.makeConnection(remoteServerHost, specifiedLocalPort);
        }  catch (IOException e){

@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import local_command.CreateRoomCommand;
 import server_command.*;
 
 import java.lang.reflect.Type;
@@ -30,8 +31,8 @@ public class CommandFactory {
                 return this.generateCommand(jsonMessage, HostChangeCommand.class);
             case "message":
                 return this.generateCommand(jsonMessage, MessageCommand.class);
-            case "createroom":
-                return this.generateCommand(jsonMessage, CreateRoomCommand.class);
+            case "listneighbors":
+                return this.generateCommand(jsonMessage, ListNeighborCommand.class);
             case "join":
                 return this.generateCommand(jsonMessage, JoinCommand.class);
             case "who":

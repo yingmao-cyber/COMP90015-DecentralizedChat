@@ -76,7 +76,7 @@ public class ChatServer extends Thread{
         String localServerHost = formatIPAddr(ipAddress) + ":" + listeningPort;
         ChatClient chatClient = new ChatClient(localServerHost, iPort);
 
-        new LocalCommandHandler(chatClient).start();
+        new LocalCommandHandler(chatClient, chatManager).start();
     }
 
     public static String formatIPAddr(String ipAddr){

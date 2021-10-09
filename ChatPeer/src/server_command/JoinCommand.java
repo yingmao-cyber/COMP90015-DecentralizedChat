@@ -22,7 +22,6 @@ public class JoinCommand extends ServerCommand{
         String former = serverConnection.getCurrentChatRoom();
 
         ChatManager chatManager = serverConnection.getChatManager();
-        chatManager.removeEmptyRoomWithOwnerDropped();
 
         /**
          * if join room successfully
@@ -46,20 +45,6 @@ public class JoinCommand extends ServerCommand{
             //send to all the clients in the room the client move to
             serverConnection.setCurrentChatRoom(roomid);
             chatManager.broadCastToCurrentRoom(serverConnection, jsonMessage, null);
-
-
-
-
-
-            //if it's mainHall send roomContent and room list
-            if (this.roomid.equals("MainHall")){
-                jsonMessage = WhoCommand.buildRoomContent(chatManager,"MainHall" );
-                System.out.println("Send: " + jsonMessage);
-                chatManager.sendToOneClient(jsonMessage,serverConnection );
-                jsonMessage = ListCommand.buildRoomList(chatManager, null, null);
-                System.out.println("Send: " + jsonMessage);
-                chatManager.sendToOneClient(jsonMessage, serverConnection);
-            }
 
         }
         else{ // if requested room is the current room or the requested does not exist, the request is invalid

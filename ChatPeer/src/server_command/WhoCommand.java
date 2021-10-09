@@ -19,7 +19,6 @@ public class WhoCommand extends ServerCommand{
     public void execute(ServerConnection serverConnection) {
 
         ChatManager chatManager = serverConnection.getChatManager();
-        chatManager.removeEmptyRoomWithOwnerDropped();
         String jsonMessage = buildRoomContent(chatManager, roomid);
         System.out.println("Send: " + jsonMessage);
         chatManager.sendToOneClient(jsonMessage, serverConnection);
@@ -28,13 +27,9 @@ public class WhoCommand extends ServerCommand{
 
     public static String buildRoomContent(ChatManager chatManager, String roomid){
         Gson gson = new Gson();
-        String owner = chatManager.getRoomOwner(roomid);
-        /** when room owner gets disconnected, owner is set to an empty string */
-        if (owner == null){
-            owner = "";
-        }
+
         ArrayList<String> identities = chatManager.getRoomIdentities(roomid);
-        RoomContentsCommand roomContentsCommand = new RoomContentsCommand(roomid, identities, owner);
+        RoomContentsCommand roomContentsCommand = new RoomContentsCommand(roomid, identities);
         return gson.toJson(roomContentsCommand);
     }
 
