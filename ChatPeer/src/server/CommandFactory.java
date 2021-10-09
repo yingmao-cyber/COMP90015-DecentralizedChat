@@ -2,7 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import local_command.CreateRoomCommand;
+import local_command.DeleteCommand;
 import server_command.*;
 
 import java.lang.reflect.Type;
@@ -39,8 +39,6 @@ public class CommandFactory {
                 return this.generateCommand(jsonMessage, WhoCommand.class);
             case "list":
                 return this.generateCommand(jsonMessage, ListCommand.class);
-            case "delete":
-                return this.generateCommand(jsonMessage, DeleteCommand.class);
             case "quit":
                 return this.generateCommand(jsonMessage, QuitCommand.class);
             default:

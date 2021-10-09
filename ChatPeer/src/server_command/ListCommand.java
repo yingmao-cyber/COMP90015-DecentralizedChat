@@ -15,7 +15,7 @@ public class ListCommand extends ServerCommand{
     public void execute(ServerConnection serverConnection) {
         ChatManager chatManager = serverConnection.getChatManager();
         String roomList = buildRoomList(chatManager, null, null);
-        System.out.println("Send: " + roomList);
+//        System.out.println("Send: " + roomList);
         chatManager.sendToOneClient(roomList, serverConnection);
 
     }

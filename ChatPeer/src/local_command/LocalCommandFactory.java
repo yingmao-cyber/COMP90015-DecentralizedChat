@@ -1,7 +1,6 @@
 package local_command;
 
 import client.ChatClient;
-import server.ServerConnection;
 
 import java.util.ArrayList;
 
@@ -44,7 +43,11 @@ public class LocalCommandFactory {
                     return new ConnectCommand(remoteServerHost, specifiedLocalPort );
                 case "createroom":
                     return new CreateRoomCommand(inputArray.get(1));
+                case "delete":
+                    System.out.println("delete called " + inputArray.get(1));
+                    return new DeleteCommand(inputArray.get(1));
                 default:
+                    System.out.println("Command " + userInput + " is invalid.");
                     return null;
             }
         }

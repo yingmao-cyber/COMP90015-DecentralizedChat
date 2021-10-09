@@ -20,7 +20,7 @@ public class WhoCommand extends ServerCommand{
 
         ChatManager chatManager = serverConnection.getChatManager();
         String jsonMessage = buildRoomContent(chatManager, roomid);
-        System.out.println("Send: " + jsonMessage);
+//        System.out.println("Send: " + jsonMessage);
         chatManager.sendToOneClient(jsonMessage, serverConnection);
     }
 

@@ -3,7 +3,6 @@ package client;
 import client_command.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import local_command.CreateRoomCommand;
 import server_command.*;
 
 import java.lang.reflect.Type;
@@ -83,9 +82,6 @@ public class CommandFactory {
                     return new WhoCommand(arg);
                 case "list":
                     return new ListCommand();
-                case "delete":
-                    this.chatClient.requestDeleteRoom(arg);
-                    return new DeleteCommand(arg);
                 case "message":
                     return new MessageCommand(arg);
                 case "quit":

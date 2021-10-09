@@ -36,7 +36,7 @@ public class JoinCommand extends ServerCommand{
         if (!this.roomid.equals(former) && chatManager.joinRoom(serverConnection, roomid)){
             roomChangeCommand = new RoomChangeCommand(identity, former, roomid);
             jsonMessage = gson.toJson(roomChangeCommand);
-            System.out.println("Send: " + jsonMessage);
+//            System.out.println("Send: " + jsonMessage);
             // if current room is not null, also send to the current room
             if (!serverConnection.getCurrentChatRoom().equals("")){
                 chatManager.broadCastToCurrentRoom(serverConnection, jsonMessage, null);

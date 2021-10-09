@@ -39,6 +39,10 @@ public class ChatManager {
         return clientConnectionList.containsKey(connection);
     }
 
+    public ArrayList<ServerConnection> getChatRooms(String roomid){
+        return chatRooms.getOrDefault(roomid, new ArrayList<>());
+    }
+
     public void removeClientConnection(ServerConnection connection){
         synchronized (clientConnectionList){
             clientConnectionList.remove(connection);
@@ -101,12 +105,10 @@ public class ChatManager {
         }
     }
 
-
     public synchronized void leaveRoom(ServerConnection s, String roomid){
         // if the room to join exists
         System.out.println("Client " +  s.getName() + " leave the room " + roomid);
-        String currentRoom = s.getCurrentChatRoom();
-        ArrayList<ServerConnection> currentRoomClientList = this.chatRooms.get(currentRoom);
+        ArrayList<ServerConnection> currentRoomClientList = this.chatRooms.get(roomid);
         if (currentRoomClientList != null){
             currentRoomClientList.remove(s);
             s.setCurrentChatRoom("");
@@ -172,6 +174,14 @@ public class ChatManager {
             }
             else{
                 return false;
+            }
+        }
+    }
+
+    public synchronized void removeRoom(String roomid){
+        synchronized (chatRooms){
+            if (chatRooms.containsKey(roomid)){
+                chatRooms.remove(roomid);
             }
         }
     }

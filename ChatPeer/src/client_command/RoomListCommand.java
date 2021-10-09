@@ -56,7 +56,9 @@ public class RoomListCommand extends ClientCommand{
             StringBuilder print = new StringBuilder();
             for(RoomInfo r: rooms){
                 int noOfGuests = r.getCount();
-                print.append(r.getRoomid()).append(": ").append(noOfGuests).append(noOfGuests >1? " guests\n": " guest\n");
+                if (!r.getRoomid().equals("")){
+                    print.append(r.getRoomid()).append(": ").append(noOfGuests).append(noOfGuests >1? " guests\n": " guest\n");
+                }
             }
             String printStr = print.toString().stripTrailing();
             System.out.println(printStr);
