@@ -3,6 +3,7 @@ package server_command;
 import client_command.NewIdentityCommand;
 import client_command.RoomChangeCommand;
 import com.google.gson.Gson;
+import jdk.swing.interop.SwingInterOpUtils;
 import server.ChatManager;
 import server.ServerConnection;
 

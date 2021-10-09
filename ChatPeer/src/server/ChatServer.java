@@ -2,6 +2,8 @@ package server;
 
 import client.ChatClient;
 import client.LocalCommandHandler;
+import client_command.NewIdentityCommand;
+import com.google.gson.Gson;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.BasicParser;
@@ -10,6 +12,7 @@ import org.apache.commons.cli.Options;
 
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,10 +25,12 @@ public class ChatServer extends Thread{
     private static final ChatManager chatManager = new ChatManager();
     private static final CommandFactory commandFactory = new CommandFactory();
     private boolean alive;
+    private final Gson gson;
     public static final Logger LOGGER = Logger.getLogger(ChatServer.class.getName());
 
     public ChatServer(int listeningPort){
         this.listeningPort = listeningPort;
+        this.gson = new Gson();
     }
 
     /**
@@ -96,6 +101,9 @@ public class ChatServer extends Thread{
                     ServerConnection serverConnection = new ServerConnection(soc, chatManager, commandFactory);
                     serverConnection.start(); // start thread
                     serverConnection.setName(peerIdentity);
+                    chatManager.addClientToConnectionList(serverConnection, null);
+                    String peerIdentityMessage = gson.toJson(new NewIdentityCommand(peerIdentity));
+                    chatManager.sendToOneClient(peerIdentityMessage, serverConnection);
                 }
 
             }

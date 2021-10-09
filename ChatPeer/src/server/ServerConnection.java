@@ -57,7 +57,7 @@ public class ServerConnection extends Thread {
                 if (chatManager.isClientInConnectionList(this)){
                     String jsonMessage = this.reader.readLine();
                     if (jsonMessage != null){
-//                    System.out.println("receive: " + jsonMessage);
+//                        System.out.println("receive: " + jsonMessage);
                         executeCommand(jsonMessage);
                     } else if (jsonMessage == null) {
                         /** if client disconnects, reader.readLine() returns null */

@@ -24,13 +24,10 @@ public class CommandFactory {
      */
     public ServerCommand convertClientMessageToCommand(String jsonMessage){
         String type = this.gson.fromJson(jsonMessage, JsonObject.class).get("type").getAsString();
-        System.out.println("Received: " + jsonMessage);
 
         switch(type){
             case "hostchange":
                 return this.generateCommand(jsonMessage, HostChangeCommand.class);
-            case "identitychange":
-                return this.generateCommand(jsonMessage, IdentityChangeCommand.class);
             case "message":
                 return this.generateCommand(jsonMessage, MessageCommand.class);
             case "createroom":

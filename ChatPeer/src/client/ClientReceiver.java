@@ -43,7 +43,7 @@ public class ClientReceiver extends Thread{
     public void run(){
         while (connection_alive) {
             try {
-                System.out.println("chat receiver started");
+                System.out.println("Client Receiver:");
                 String str = reader.readLine();
                 System.out.println("read by chat receiver: " + str);
                 if (str == null){
@@ -52,9 +52,9 @@ public class ClientReceiver extends Thread{
                 } else {
                     ClientCommand command = commandFactory.convertServerMessageToCommand(str);
                     if (command != null){
-                        if (command instanceof RoomChangeCommand && ((RoomChangeCommand) command).getRoomid().equals("MainHall")){
-                            chatClient.setBundleMsg(true);
-                        }
+//                        if (command instanceof RoomChangeCommand && ((RoomChangeCommand) command).getRoomid().equals("MainHall")){
+//                            chatClient.setBundleMsg(true);
+//                        }
                         command.execute(chatClient);
                     }
                 }

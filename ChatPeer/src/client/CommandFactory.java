@@ -73,8 +73,6 @@ public class CommandFactory {
             }
 
             switch(type){
-                case "identitychange":
-                    return new IdentityChangeCommand(arg);
                 case "join":
                     return new JoinCommand(arg);
                 case "who":

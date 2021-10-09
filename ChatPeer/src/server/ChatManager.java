@@ -45,17 +45,6 @@ public class ChatManager {
         return clientConnectionList.containsKey(connection);
     }
 
-    public void addClientConnection(ServerConnection connection, String jsonMessage){
-        // place client to default room
-        LOGGER.info("New user:  " + connection.getName());
-
-        this.sendToOneClient(jsonMessage, connection);
-
-        JoinCommand j = new JoinCommand(defaultRoomName);
-        j.execute(connection);
-
-    }
-
     public void removeEmptyRoomWithOwnerDropped(){
         ArrayList<String> roomsToBeRemoved = new ArrayList<>();
         synchronized (this.roomOwnership) {

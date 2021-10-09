@@ -87,8 +87,9 @@ public class ChatClient {
 
 
     public void printPrefix() {
-
-        System.out.print("[" + roomid + "] " + identity + "> ");
+        if (remoteServerHost != null){
+            System.out.print("[" + roomid + "] " + identity + "> ");
+        }
     }
 
     private void handle() throws IOException {

@@ -13,9 +13,8 @@ public class HostChangeCommand extends ServerCommand {
 
     @Override
     public void execute(ServerConnection serverConnection) {
-        System.out.println("received host change command");
         ChatManager chatManager = serverConnection.getChatManager();
         /** host is referring to the peer's server host; this list is maintained for list neighbours request */
-        chatManager.addClientConnection(serverConnection, host);
+        chatManager.addClientToConnectionList(serverConnection, host);
     }
 }
