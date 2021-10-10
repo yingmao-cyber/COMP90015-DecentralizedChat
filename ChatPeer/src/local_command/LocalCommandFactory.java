@@ -44,7 +44,6 @@ public class LocalCommandFactory {
                 case "createroom":
                     return new CreateRoomCommand(inputArray.get(1));
                 case "delete":
-                    System.out.println("delete called " + inputArray.get(1));
                     return new DeleteCommand(inputArray.get(1));
                 default:
                     System.out.println("Command " + userInput + " is invalid.");

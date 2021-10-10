@@ -1,6 +1,8 @@
 package local_command;
 
 import client.ChatClient;
+import client_command.RoomChangeCommand;
+import com.google.gson.Gson;
 import server.ChatManager;
 import server.ServerConnection;
 import server_command.JoinCommand;
@@ -19,10 +21,14 @@ public class DeleteCommand extends LocalCommand {
 
     @Override
     public void execute(ChatClient chatClient, ChatManager chatManager) {
-        System.out.println("delete called");
+        Gson gson = new Gson();
         ArrayList<ServerConnection> clientsInRoom = chatManager.getChatRooms(roomid);
         /** treat as clients join the empty room */
         for (ServerConnection client: clientsInRoom){
+            RoomChangeCommand roomChangeCommand = new RoomChangeCommand(
+                    client.getName(), client.getCurrentChatRoom(), "");
+            String jsonMessage = gson.toJson(roomChangeCommand);
+            chatManager.sendToOneClient(jsonMessage, client);
             client.setCurrentChatRoom("");
         }
         chatManager.removeRoom(roomid);

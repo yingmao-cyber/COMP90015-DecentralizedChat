@@ -31,6 +31,7 @@ public class RoomContentsCommand extends ClientCommand{
                 print.append(str).append(" ");
             }
         }
+        System.out.println();
         System.out.println(print);
 
         if (!chatClient.isBundleMsg()){

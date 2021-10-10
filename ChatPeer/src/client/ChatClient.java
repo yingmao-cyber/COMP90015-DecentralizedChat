@@ -1,7 +1,6 @@
 package client;
 
 import com.google.gson.Gson;
-import server.ChatPeer;
 import server_command.HostChangeCommand;
 import server_command.ServerCommand;
 
@@ -11,6 +10,7 @@ import java.net.Socket;
 
 public class ChatClient {
     private Socket socket;
+    private boolean quitFlag = false;
     private PrintWriter writer;
     private final String localServerHost;
     private Gson gson;
@@ -29,6 +29,14 @@ public class ChatClient {
         this.localServerHost = localServerHost;
         this.iPort = iPort;
         this.gson = new Gson();
+    }
+
+    public void setQuitFlag(boolean quitFlag){
+        this.quitFlag = quitFlag;
+    }
+
+    public boolean getQuitFlag(){
+        return this.quitFlag;
     }
 
     public boolean isBundleMsg() {
@@ -61,6 +69,7 @@ public class ChatClient {
      * */
     public void makeConnection(String remoteServerHost, int specifiedLocalPort) throws IOException {
         // new connection request will be ignored if client is currently connected to a remote server
+        quitFlag = false;
         if (remoteServerHost != null){
             String[] arrayList = remoteServerHost.split(":");
             String remoteServerIP = arrayList[0];
@@ -123,13 +132,11 @@ public class ChatClient {
     }
 
     public void disconnect() {
-        System.out.println("---disconnect called");
         if (clientReceiver != null){
             clientReceiver.setConnection_alive(false);
             remoteServerHost = null;
         }
         connected = false;
-//        ChatPeer.startNewLocalHandlerThread();
     }
 
     public void setRoomid(String roomid) {

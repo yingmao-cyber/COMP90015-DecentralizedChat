@@ -1,5 +1,3 @@
-package server;
-
 import client.ChatClient;
 import client.LocalCommandHandler;
 import org.apache.commons.cli.*;

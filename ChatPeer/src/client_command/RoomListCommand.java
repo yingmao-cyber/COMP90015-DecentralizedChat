@@ -61,6 +61,7 @@ public class RoomListCommand extends ClientCommand{
                 }
             }
             String printStr = print.toString().stripTrailing();
+            System.out.println();
             System.out.println(printStr);
         }
 

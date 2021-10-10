@@ -56,6 +56,7 @@ class ClientSender extends Thread{
                             if (chatClient.getRoomid().equals("")){
                                 System.out.println("Need to join a room to be able to quit.");
                             } else {
+                                chatClient.setQuitFlag(true);
                                 this.writer.println(jsonMessage);
                                 connection_alive = false;
                             }
