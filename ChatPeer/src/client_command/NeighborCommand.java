@@ -14,5 +14,6 @@ public class NeighborCommand extends ClientCommand {
     @Override
     public void execute(ChatClient chatClient) {
         System.out.println("\nneighbors: " + this.neighbors);
+        chatClient.printPrefix();
     }
 }

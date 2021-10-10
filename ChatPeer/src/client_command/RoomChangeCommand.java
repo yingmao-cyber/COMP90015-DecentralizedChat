@@ -22,10 +22,7 @@ public class RoomChangeCommand extends ClientCommand{
     public void execute(ChatClient chatClient) {
         /** room id changed to " " */
         if (roomid.equals("") && (!former.equals(roomid))){
-            if (!chatClient.getQuitFlag()){
-                chatClient.setRoomid("");
-                return;
-            } else if (identity.equals(chatClient.getIdentity())){
+           if (identity.equals(chatClient.getIdentity()) && chatClient.getQuitFlag()){
                 try {
                     System.out.println(identity + " leaves " + chatClient.getRoomid());
                     chatClient.setRoomid("");

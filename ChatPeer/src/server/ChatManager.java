@@ -26,6 +26,10 @@ public class ChatManager {
 
     public synchronized HashMap<ServerConnection, String> getClientConnectionList() {return clientConnectionList;}
 
+    public synchronized boolean isRoomIdExist(String roomid){
+        return chatRooms.containsKey(roomid);
+    }
+
 
     public void addClientToConnectionList(ServerConnection connection, String remotePeerHost){
         clientConnectionList.put(connection, remotePeerHost);

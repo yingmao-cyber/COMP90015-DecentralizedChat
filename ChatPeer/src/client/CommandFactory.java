@@ -120,6 +120,8 @@ public class CommandFactory {
                 return this.generateCommand(jsonMessage, MessageRelayCommand.class);
             case "roomchange":
                 return this.generateCommand(jsonMessage, RoomChangeCommand.class);
+            case "roomchangeondelete":
+                return this.generateCommand(jsonMessage, RoomChangeOnDelete.class);
             case "roomcontents":
                 return this.generateCommand(jsonMessage, RoomContentsCommand.class);
             case "roomlist":
