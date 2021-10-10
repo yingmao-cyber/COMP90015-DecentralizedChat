@@ -50,7 +50,7 @@ public class JoinCommand extends ServerCommand{
         else{ // if requested room is the current room or the requested does not exist, the request is invalid
             roomChangeCommand = new RoomChangeCommand(identity, former, former);
             jsonMessage = gson.toJson(roomChangeCommand);
-            System.out.println("Send: " + jsonMessage);
+//            System.out.println("Send: " + jsonMessage);
             chatManager.sendToOneClient(jsonMessage, serverConnection);
         }
 

@@ -2,7 +2,6 @@ package client;
 
 import client_command.ClientCommand;
 
-import client_command.RoomChangeCommand;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,18 +42,13 @@ public class ClientReceiver extends Thread{
     public void run(){
         while (connection_alive) {
             try {
-                System.out.println("Client Receiver:");
                 String str = reader.readLine();
-                System.out.println("read by chat receiver: " + str);
                 if (str == null){
                     System.out.println("\nWARNING: Server has closed the connection!");
                     this.connection_alive = false;
                 } else {
                     ClientCommand command = commandFactory.convertServerMessageToCommand(str);
                     if (command != null){
-//                        if (command instanceof RoomChangeCommand && ((RoomChangeCommand) command).getRoomid().equals("MainHall")){
-//                            chatClient.setBundleMsg(true);
-//                        }
                         command.execute(chatClient);
                     }
                 }

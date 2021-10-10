@@ -1,9 +1,5 @@
 package server;
 
-import com.google.gson.Gson;
-import server_command.JoinCommand;
-import shared.Validator;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,19 +45,10 @@ public class ChatManager {
         }
 
         String roomName = connection.getCurrentChatRoom();
-        LOGGER.info("Remove " + connection.getName() + " from " + roomName);
-
-        synchronized (this.chatRooms){
-            ArrayList<ServerConnection> currentRoomClientList = this.chatRooms.get(roomName);
-            if (currentRoomClientList != null){
-                currentRoomClientList.remove(roomName);
-            }
-        }
+//        LOGGER.info("Remove " + connection.getName() + " from " + roomName);
 
         // client leave room
         this.leaveRoom(connection, roomName);
-
-
     }
 
     public void broadCastAllRooms(String message, ServerConnection ignore){
@@ -89,7 +76,7 @@ public class ChatManager {
 
     public void broadCastToCurrentRoom(ServerConnection s, String message ,ServerConnection ignore){
         String roomName = s.getCurrentChatRoom();
-        LOGGER.info("Broadcast msg to " + roomName);
+//        LOGGER.info("Broadcast msg to " + roomName);
         ArrayList<ServerConnection> sc = this.chatRooms.get(roomName);
         if (sc != null){
             broadCastAGroup(sc, message,ignore);
@@ -106,12 +93,13 @@ public class ChatManager {
     }
 
     public synchronized void leaveRoom(ServerConnection s, String roomid){
-        // if the room to join exists
-        System.out.println("Client " +  s.getName() + " leave the room " + roomid);
-        ArrayList<ServerConnection> currentRoomClientList = this.chatRooms.get(roomid);
-        if (currentRoomClientList != null){
-            currentRoomClientList.remove(s);
-            s.setCurrentChatRoom("");
+        synchronized (chatRooms){
+            System.out.println("Client " +  s.getName() + " leave the room " + roomid);
+            ArrayList<ServerConnection> currentRoomClientList = this.chatRooms.get(roomid);
+            if (currentRoomClientList != null){
+                currentRoomClientList.remove(s);
+                s.setCurrentChatRoom("");
+            }
         }
     }
 
@@ -119,7 +107,7 @@ public class ChatManager {
         ArrayList<ServerConnection> newRoom = this.chatRooms.getOrDefault(roomid, null);
         // if the room to join exists
         if (newRoom != null){
-            LOGGER.info("Peer " +  s.getName() + " join the room " + roomid);
+//            LOGGER.info("Peer " +  s.getName() + " join the room " + roomid);
             String currentRoom = s.getCurrentChatRoom();
             ArrayList<ServerConnection> currentRoomClientList = this.chatRooms.get(currentRoom);
             if (currentRoomClientList != null) {
@@ -131,9 +119,6 @@ public class ChatManager {
         return false;
     }
 
-    public synchronized int getRoomSize(String roomid){
-        return this.chatRooms.get(roomid).size();
-    }
 
     public synchronized ArrayList<String> getRoomIdentities(String roomid){
 //        LOGGER.info("Client requests " + roomid + " identities");
@@ -165,10 +150,9 @@ public class ChatManager {
         return roomsInfo;
     }
 
-
     public synchronized boolean createRoom(String roomid){
         synchronized (chatRooms){
-            if (Validator.isRoomIdValid(roomid) && !chatRooms.containsKey(roomid)){
+            if (isRoomIdValid(roomid) && !chatRooms.containsKey(roomid)){
                 this.chatRooms.put(roomid, new ArrayList<>());
                 return true;
             }
@@ -178,6 +162,13 @@ public class ChatManager {
         }
     }
 
+    private boolean isRoomIdValid(String roomid){
+        boolean matchResult = roomid.matches("[A-Za-z0-9]+");
+        boolean firstLetter = Character.isLetter(roomid.charAt(0));
+        boolean lengthCheckResult = roomid.length() >= 3 && roomid.length() <= 32;
+        return matchResult && firstLetter && lengthCheckResult;
+    }
+
     public synchronized void removeRoom(String roomid){
         synchronized (chatRooms){
             if (chatRooms.containsKey(roomid)){
@@ -185,30 +176,4 @@ public class ChatManager {
             }
         }
     }
-
-
-    public boolean deleteRoom(ServerConnection s, String roomid){
-            ArrayList<ServerConnection> clientsInRoom;
-            synchronized (this.chatRooms) {
-                clientsInRoom = this.chatRooms.get(roomid);
-            }
-                if (clientsInRoom == null ){
-                    System.out.println("Delete fail because no such room exist ");
-                    return false;
-                }
-                // in order to prevent concurrency change to the array, make a shallow copy
-            ArrayList<ServerConnection> copiedClients = new ArrayList<ServerConnection>(clientsInRoom);
-            for(ServerConnection connection: copiedClients){
-                if (!connection.equals(s)){
-                    JoinCommand j = new JoinCommand(defaultRoomName);
-                    j.execute(connection);
-                }
-            }
-
-            synchronized (this.chatRooms) {
-                this.chatRooms.remove(roomid);
-            }
-            return true;
-    }
-
 }

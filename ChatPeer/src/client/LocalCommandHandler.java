@@ -23,11 +23,11 @@ public class LocalCommandHandler extends Thread {
     }
 
     public void run(){
+        connected = true;
         while (connected) {
             try {
-                System.out.println("Local Command Handler: ");
+                System.out.print(">");
                 String str = userInput.readLine();
-                System.out.println("read by local command handler: " + str);
                 if (str != null){
                     LocalCommand command = commandFactory.convertUserInputToCommand(str);
                     if (command != null){

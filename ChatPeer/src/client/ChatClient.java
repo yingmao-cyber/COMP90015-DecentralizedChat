@@ -1,6 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
+import server.ChatPeer;
 import server_command.HostChangeCommand;
 import server_command.ServerCommand;
 
@@ -93,6 +94,7 @@ public class ChatClient {
     }
 
     private void handle() throws IOException {
+        connected = true;
         try {
             clientSender = new ClientSender(socket, this);
             clientReceiver = new ClientReceiver(this);
@@ -121,11 +123,13 @@ public class ChatClient {
     }
 
     public void disconnect() {
+        System.out.println("---disconnect called");
         if (clientReceiver != null){
             clientReceiver.setConnection_alive(false);
             remoteServerHost = null;
         }
         connected = false;
+//        ChatPeer.startNewLocalHandlerThread();
     }
 
     public void setRoomid(String roomid) {

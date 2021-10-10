@@ -34,9 +34,8 @@ class ClientSender extends Thread{
         this.connection_alive = connection_alive;
     }
 
-    public void close() throws IOException {
+    public void close() {
         this.connection_alive = false;
-        this.userInput.close();
     }
 
 
@@ -53,14 +52,18 @@ class ClientSender extends Thread{
                         String jsonMessage = gson.toJson(command);
                         // convert user input to command and convert command to json object
                         // then send this json command object to server
-                        this.writer.println(jsonMessage);
-
                         if (str.equals("#quit")){
-                            connection_alive = false;
+                            if (chatClient.getRoomid().equals("")){
+                                System.out.println("Need to join a room to be able to quit.");
+                            } else {
+                                this.writer.println(jsonMessage);
+                                connection_alive = false;
+                            }
+                        } else {
+                            this.writer.println(jsonMessage);
                         }
-                    } else {
-                        chatClient.printPrefix();
                     }
+                    chatClient.printPrefix();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -68,10 +71,6 @@ class ClientSender extends Thread{
             }
         }
 
-        try {
-            this.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.close();
     }
 }
