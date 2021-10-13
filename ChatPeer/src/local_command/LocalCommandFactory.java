@@ -47,6 +47,10 @@ public class LocalCommandFactory {
                     return new DeleteCommand(inputArray.get(1));
                 case "help":
                     return new HelpCommand();
+                case "kick":
+                    return new KickCommand(inputArray.get(1));
+
+
                 default:
                     System.out.println("Command " + userInput + " is invalid.");
                     return null;

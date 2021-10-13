@@ -12,16 +12,23 @@ import java.util.logging.Logger;
  */
 
 public class ChatManager {
-    private HashMap<ServerConnection, String> clientConnectionList;
+    private HashMap<ServerConnection, String> clientConnectionList; // neighbour host list
     private HashMap<String, ArrayList<ServerConnection>> chatRooms;// room list
+    private HashMap<String, ServerConnection> connectedClients;
     protected static String defaultRoomName = "";
     public static final Logger LOGGER = Logger.getLogger(ChatServer.class.getName());
-
+    private ChatServer chatServer;
 
     public ChatManager(){
         clientConnectionList = new HashMap<>();
         chatRooms = new HashMap<>();
         chatRooms.put(defaultRoomName, new ArrayList<>());
+        connectedClients = new HashMap<>();
+
+    }
+
+    public void setChatServer(ChatServer cs){
+        this.chatServer = cs;
     }
 
     public synchronized HashMap<ServerConnection, String> getClientConnectionList() {return clientConnectionList;}
@@ -31,8 +38,10 @@ public class ChatManager {
     }
 
 
-    public void addClientToConnectionList(ServerConnection connection, String remotePeerHost){
+    public synchronized void addClientToConnectionList(ServerConnection connection, String remotePeerHost){
+        LOGGER.info(" peer connected" + connection.getName());
         clientConnectionList.put(connection, remotePeerHost);
+        connectedClients.put(connection.getName(),connection );
     }
 
     public boolean isClientInConnectionList(ServerConnection connection){
@@ -43,14 +52,15 @@ public class ChatManager {
         return chatRooms.getOrDefault(roomid, new ArrayList<>());
     }
 
-    public void removeClientConnection(ServerConnection connection){
+    public  void removeClientConnection(ServerConnection connection){
         synchronized (clientConnectionList){
             clientConnectionList.remove(connection);
         }
+        synchronized (connectedClients){
+            connectedClients.remove(connection.getName());
+        }
 
         String roomName = connection.getCurrentChatRoom();
-//        LOGGER.info("Remove " + connection.getName() + " from " + roomName);
-
         // client leave room
         this.leaveRoom(connection, roomName);
     }
@@ -96,7 +106,7 @@ public class ChatManager {
         }
     }
 
-    public synchronized void leaveRoom(ServerConnection s, String roomid){
+    public void leaveRoom(ServerConnection s, String roomid){
         synchronized (chatRooms){
             System.out.println("Client " +  s.getName() + " leave the room " + roomid);
             ArrayList<ServerConnection> currentRoomClientList = this.chatRooms.get(roomid);
@@ -154,7 +164,7 @@ public class ChatManager {
         return roomsInfo;
     }
 
-    public synchronized boolean createRoom(String roomid){
+    public boolean createRoom(String roomid){
         synchronized (chatRooms){
             if (isRoomIdValid(roomid) && !chatRooms.containsKey(roomid)){
                 this.chatRooms.put(roomid, new ArrayList<>());
@@ -173,11 +183,29 @@ public class ChatManager {
         return matchResult && firstLetter && lengthCheckResult;
     }
 
-    public synchronized void removeRoom(String roomid){
+    public void removeRoom(String roomid){
         synchronized (chatRooms){
             if (chatRooms.containsKey(roomid)){
                 chatRooms.remove(roomid);
             }
         }
+    }
+
+    public boolean  blockPeer(String peerId){
+        ServerConnection blockClient = null;
+        synchronized (connectedClients) {
+            blockClient = this.connectedClients.get(peerId);
+            if (blockClient != null){
+                this.connectedClients.remove(peerId);
+            }
+        }
+        if (blockClient != null){
+//            LOGGER.info("Block peer " + peerId);
+            this.removeClientConnection(blockClient);
+            this.chatServer.blockClient(peerId);
+            blockClient.close();
+            return true;
+        }
+        return false;
     }
 }

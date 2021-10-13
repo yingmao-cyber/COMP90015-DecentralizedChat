@@ -82,7 +82,14 @@ public class ChatClient {
             if (specifiedLocalPort != -1){
                 this.socket = new Socket(remoteServerIP, remoteServerPort, null,  specifiedLocalPort);
             } else if (iPort != -1) {
-                this.socket = new Socket(remoteServerIP, remoteServerPort, null, iPort);
+                try{
+                    this.socket = new Socket(remoteServerIP, remoteServerPort, null, iPort);
+                }catch(Exception e) {
+                    System.out.println("Connection to server" +  remoteServerPort +  " failed");
+                    e.printStackTrace();
+                    return;
+                }
+
             } else {
                 this.socket = new Socket(remoteServerIP, remoteServerPort);
             }
@@ -122,11 +129,15 @@ public class ChatClient {
              * */
             clientReceiver.close();
             clientSender.close();
-        } finally {
+        }
+        finally {
             if (socket != null){
                 System.out.println("Disconnected from localhost");
-                socket.close();
             }
+            else {
+                System.out.println("Connection failed");
+            }
+            socket.close();
         }
 
     }
