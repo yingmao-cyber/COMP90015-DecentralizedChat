@@ -41,6 +41,7 @@ public class ChatServer extends Thread{
     public void run() {
         try {
             ServerSocket serverSocket = new ServerSocket(listeningPort);
+            serverSocket.setReuseAddress(true);
             alive = true;
             while (alive){
                 Socket soc = serverSocket.accept();
@@ -55,6 +56,9 @@ public class ChatServer extends Thread{
                     chatManager.addClientToConnectionList(serverConnection, null);
                     String peerIdentityMessage = gson.toJson(new NewIdentityCommand(peerIdentity));
                     chatManager.sendToOneClient(peerIdentityMessage, serverConnection);
+                }
+                else{
+                    soc.close();
                 }
 
             }

@@ -54,7 +54,7 @@ public class ClientReceiver extends Thread{
                 }
             } catch (IOException e) {
                 this.connection_alive = false;
-                System.out.println("\nWARNING: Server has closed the connection!");
+                System.out.println("\nWARNING: Server has closed the connection -- Disconnect from the server");
             }
         }
 

@@ -85,7 +85,8 @@ public class ChatClient {
                 try{
                     this.socket = new Socket(remoteServerIP, remoteServerPort, null, iPort);
                 }catch(Exception e) {
-                    System.out.println("Connection to server" +  remoteServerPort +  " failed");
+                    System.out.println("Connection to server " +  remoteServerPort +  " failed");
+                    disconnect();
                     e.printStackTrace();
                     return;
                 }
@@ -127,8 +128,9 @@ public class ChatClient {
             /** clientReceiver is a thread responsible for receiving message
              * clientSender is a thread responsible for sending message
              * */
-            clientReceiver.close();
-            clientSender.close();
+//            clientReceiver.close();
+//            clientSender.close();
+            disconnect();
         }
         finally {
             if (socket != null){
@@ -142,10 +144,14 @@ public class ChatClient {
 
     }
 
-    public void disconnect() {
+    public void disconnect() throws IOException {
         if (clientReceiver != null){
             clientReceiver.setConnection_alive(false);
+            clientReceiver.close();
             remoteServerHost = null;
+        }
+        if(clientSender != null){
+            clientSender.close();
         }
         connected = false;
     }
