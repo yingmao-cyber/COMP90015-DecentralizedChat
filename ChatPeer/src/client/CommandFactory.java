@@ -3,7 +3,6 @@ package client;
 import client_command.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import local_command.DeleteCommand;
 import server_command.*;
 import server_command.HelpCommand;
 
@@ -133,8 +132,6 @@ public class CommandFactory {
                 return this.generateCommand(jsonMessage, MessageRelayCommand.class);
             case "roomchange":
                 return this.generateCommand(jsonMessage, RoomChangeCommand.class);
-            case "roomchangeondelete":
-                return this.generateCommand(jsonMessage, RoomChangeOnDelete.class);
             case "roomcontents":
                 return this.generateCommand(jsonMessage, RoomContentsCommand.class);
             case "roomlist":
