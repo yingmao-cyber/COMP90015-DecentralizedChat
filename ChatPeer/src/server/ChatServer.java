@@ -52,7 +52,7 @@ public class ChatServer extends Thread{
                     serverConnection.start(); // start thread
                     serverConnection.setName(peerIdentity);
                     chatManager.addClientToConnectionList(serverConnection, null);
-                    String peerIdentityMessage = gson.toJson(new RoomChangeCommand(peerIdentity, "", "n"));
+                    String peerIdentityMessage = gson.toJson(new RoomChangeCommand(peerIdentity, "", ""));
                     chatManager.sendToOneClient(peerIdentityMessage, serverConnection);
                 }
                 else{

@@ -4,8 +4,6 @@ import client_command.RoomChangeCommand;
 import com.google.gson.Gson;
 import server.ChatManager;
 import server.IConnection;
-import server.LocalPeerConnection;
-import server.ServerConnection;
 
 public class JoinCommand extends ServerCommand{
     private String roomid;
@@ -48,7 +46,7 @@ public class JoinCommand extends ServerCommand{
 
         }
         else{ // if requested room is the current room or the requested does not exist, the request is invalid
-            roomChangeCommand = new RoomChangeCommand(identity, former, former);
+            roomChangeCommand = new RoomChangeCommand(identity, former, null);
             jsonMessage = gson.toJson(roomChangeCommand);
 //            System.out.println("Send: " + jsonMessage);
             chatManager.sendToOneClient(jsonMessage, connection);

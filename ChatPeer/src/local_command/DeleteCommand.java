@@ -32,6 +32,8 @@ public class DeleteCommand extends LocalCommand {
             client.setCurrentChatRoom("");
         }
         chatManager.removeRoom(roomid);
-        chatClient.printPrefix();
+        if (!chatClient.isConnectedLocally()){
+            chatClient.printPrefix();
+        }
     }
 }

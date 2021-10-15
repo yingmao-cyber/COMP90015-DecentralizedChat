@@ -1,7 +1,6 @@
 package local_command;
 
 import client.ChatClient;
-import client_command.HelpCommand;
 
 import java.util.ArrayList;
 
@@ -49,6 +48,7 @@ public class LocalCommandFactory {
                 case "kick":
                     if (inputArray.size() == 1){
                         System.out.println("Command " + userInput + " is invalid.");
+                        chatClient.printPrefix();
                         return null;
                     }
                     return new KickCommand(inputArray.get(1));

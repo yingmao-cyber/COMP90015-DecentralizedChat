@@ -35,13 +35,14 @@ public class LocalCommandHandler extends Thread {
 
     public void run(){
         connected = true;
-        chatClient.printPrefix();
         while (connected) {
+            System.out.println();
+            chatClient.setIdentity(localPeerConnection.getName());
+            chatClient.setLocalPeerConnection(localPeerConnection);
+            chatClient.printPrefix();
             try {
                 boolean isConnectedToLocal = chatManager.isClientInConnectionList(localPeerConnection);
                 if (!isConnectedToLocal){
-                    RoomChangeCommand roomChangeCommand = new RoomChangeCommand(localPeerConnection.getName(), "", "n");
-                    roomChangeCommand.execute(chatClient);
                     chatManager.addClientToConnectionList(localPeerConnection, localPeerConnection.getName());
                 }
 
@@ -50,9 +51,13 @@ public class LocalCommandHandler extends Thread {
                     LocalCommand localCommand = localCommandFactory.convertUserInputToCommand(str);
                     ServerCommand serverCommand = clientCommandFactory.convertUserInputToCommand(str);
                     if (localCommand != null){
+                        if(localCommand instanceof ConnectCommand){
+                            chatManager.leaveRoom(localPeerConnection, chatClient.getRoomid());
+                            chatClient.setRoomid("");
+                        }
                         localCommand.execute(chatClient, chatManager);
                     } else if (serverCommand != null){
-                        if (str.contains("#create")){
+                        if (str.contains("#connect")){
                             System.out.println("Need to quit first to be able to connect to new peer.");
                         }
                         serverCommand.execute(localPeerConnection);

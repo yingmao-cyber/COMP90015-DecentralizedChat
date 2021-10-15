@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import server.ChatManager;
 import server.IConnection;
 import server.LocalPeerConnection;
-import server.ServerConnection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +20,7 @@ public class ListNeighborCommand extends ServerCommand {
         ArrayList<String> listNeighbors = new ArrayList<>();
         for (Map.Entry<IConnection, String> entry: peerLists.entrySet()){
             /** list should not include the address of the client that issued the request */
-            if (!entry.getKey().equals(connection)){
+            if (!entry.getKey().equals(connection) && !(entry.getKey() instanceof LocalPeerConnection)){
                 listNeighbors.add(entry.getValue());
             }
         }

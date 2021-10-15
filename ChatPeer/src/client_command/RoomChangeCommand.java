@@ -20,6 +20,11 @@ public class RoomChangeCommand extends ClientCommand{
 
     @Override
     public void execute(ChatClient chatClient) {
+        if (roomid == null){
+            System.out.println("\nThe requested room is invalid or non existent");
+            chatClient.printPrefix();
+            return;
+        }
         /** for room deletion */
         if (roomid.equals("d")){
             chatClient.setRoomid("");
@@ -30,10 +35,8 @@ public class RoomChangeCommand extends ClientCommand{
             return;
         }
         /** for the initial new room */
-        if (roomid.equals("n")){
-            chatClient.setIdentity(identity);
-            return;
-        }
+
+//        System.out.println("former: " + former + ", identity: " + identity + ", roomid: " + roomid);
         /** room id changed to " " */
         if (roomid.equals("") && (!former.equals(roomid))){
            if (identity.equals(chatClient.getIdentity()) && chatClient.getQuitFlag()){
@@ -59,10 +62,8 @@ public class RoomChangeCommand extends ClientCommand{
                 System.out.println(identity + " moved from " + former + " to " + roomid);
             }
 
-        }else{
-            if (!roomid.equals("")){
-                System.out.println("\nThe requested room is invalid or non existent");
-            }
+        }else if (former.equals("") && roomid.equals("")){
+            chatClient.setIdentity(identity);
         }
 
         if (!chatClient.isBundleMsg() ){
