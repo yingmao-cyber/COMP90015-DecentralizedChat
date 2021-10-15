@@ -20,8 +20,14 @@ public class RoomChangeCommand extends ClientCommand{
 
     @Override
     public void execute(ChatClient chatClient) {
+        if (roomid.equals("d")){
+            chatClient.setRoomid("");
+            System.out.println();
+            chatClient.printPrefix();
+            return;
+        }
         /** room id changed to " " */
-        if (roomid.equals("") && (!former.equals(roomid))){
+        else if (roomid.equals("") && (!former.equals(roomid))){
            if (identity.equals(chatClient.getIdentity()) && chatClient.getQuitFlag()){
                 try {
                     System.out.println(identity + " leaves " + chatClient.getRoomid());

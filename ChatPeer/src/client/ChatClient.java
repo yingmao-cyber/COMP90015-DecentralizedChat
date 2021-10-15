@@ -81,9 +81,11 @@ public class ChatClient {
 
             if (specifiedLocalPort != -1){
                 this.socket = new Socket(remoteServerIP, remoteServerPort, null,  specifiedLocalPort);
+                this.socket.setReuseAddress(true);
             } else if (iPort != -1) {
                 try{
                     this.socket = new Socket(remoteServerIP, remoteServerPort, null, iPort);
+                    this.socket.setReuseAddress(true);
                 }catch(Exception e) {
                     System.out.println("Connection to server " +  remoteServerPort +  " failed");
                     disconnect();
