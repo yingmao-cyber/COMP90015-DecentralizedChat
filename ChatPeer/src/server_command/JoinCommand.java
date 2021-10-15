@@ -1,10 +1,10 @@
 package server_command;
 
-import client_command.NewIdentityCommand;
 import client_command.RoomChangeCommand;
 import com.google.gson.Gson;
-import jdk.swing.interop.SwingInterOpUtils;
 import server.ChatManager;
+import server.IConnection;
+import server.LocalPeerConnection;
 import server.ServerConnection;
 
 public class JoinCommand extends ServerCommand{
@@ -16,12 +16,12 @@ public class JoinCommand extends ServerCommand{
     }
 
     @Override
-    public void execute(ServerConnection serverConnection) {
+    public void execute(IConnection connection) {
         Gson gson = new Gson();
-        String identity = serverConnection.getName();
-        String former = serverConnection.getCurrentChatRoom();
+        String identity = connection.getName();
+        String former = connection.getCurrentChatRoom();
 
-        ChatManager chatManager = serverConnection.getChatManager();
+        ChatManager chatManager = connection.getChatManager();
 
         /**
          * if join room successfully
@@ -33,25 +33,25 @@ public class JoinCommand extends ServerCommand{
          */
         String jsonMessage;
         RoomChangeCommand roomChangeCommand;
-        if (!this.roomid.equals(former) && chatManager.joinRoom(serverConnection, roomid)){
+        if (!this.roomid.equals(former) && chatManager.joinRoom(connection, roomid)){
             roomChangeCommand = new RoomChangeCommand(identity, former, roomid);
             jsonMessage = gson.toJson(roomChangeCommand);
 //            System.out.println("Send: " + jsonMessage);
             // if current room is not null, also send to the current room
-            if (!serverConnection.getCurrentChatRoom().equals("")){
-                chatManager.broadCastToCurrentRoom(serverConnection, jsonMessage, null);
+            if (!connection.getCurrentChatRoom().equals("")){
+                chatManager.broadCastToCurrentRoom(connection, jsonMessage, null);
             }
 
             //send to all the clients in the room the client move to
-            serverConnection.setCurrentChatRoom(roomid);
-            chatManager.broadCastToCurrentRoom(serverConnection, jsonMessage, null);
+            connection.setCurrentChatRoom(roomid);
+            chatManager.broadCastToCurrentRoom(connection, jsonMessage, null);
 
         }
         else{ // if requested room is the current room or the requested does not exist, the request is invalid
             roomChangeCommand = new RoomChangeCommand(identity, former, former);
             jsonMessage = gson.toJson(roomChangeCommand);
 //            System.out.println("Send: " + jsonMessage);
-            chatManager.sendToOneClient(jsonMessage, serverConnection);
+            chatManager.sendToOneClient(jsonMessage, connection);
         }
 
     }

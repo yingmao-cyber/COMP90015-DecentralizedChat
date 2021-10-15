@@ -1,22 +1,19 @@
 package server_command;
 
-import client_command.RoomChangeCommand;
 import client_command.RoomListCommand;
 import com.google.gson.Gson;
 import server.ChatManager;
-import server.ServerConnection;
-
-import java.util.HashMap;
+import server.IConnection;
 
 public class ListCommand extends ServerCommand{
     private final String type = "list";
 
     @Override
-    public void execute(ServerConnection serverConnection) {
-        ChatManager chatManager = serverConnection.getChatManager();
+    public void execute(IConnection connection) {
+        ChatManager chatManager = connection.getChatManager();
         String roomList = buildRoomList(chatManager, null, null);
 //        System.out.println("Send: " + roomList);
-        chatManager.sendToOneClient(roomList, serverConnection);
+        chatManager.sendToOneClient(roomList, connection);
 
     }
 

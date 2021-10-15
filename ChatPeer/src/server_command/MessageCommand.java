@@ -3,6 +3,8 @@ package server_command;
 import client_command.MessageRelayCommand;
 import com.google.gson.Gson;
 import server.ChatManager;
+import server.IConnection;
+import server.LocalPeerConnection;
 import server.ServerConnection;
 
 public class MessageCommand extends ServerCommand{
@@ -15,20 +17,20 @@ public class MessageCommand extends ServerCommand{
     }
 
     @Override
-    public void execute(ServerConnection serverConnection) {
+    public void execute(IConnection connection) {
         Gson gson = new Gson();
-        ChatManager chatManager = serverConnection.getChatManager();
+        ChatManager chatManager = connection.getChatManager();
 
         /** message sent to client in the same room:
          * {"type": "message", "identity": "aaron", "content": "Hi there!"}
          * id of the sender is appended to the message
          */
-        String identity = serverConnection.getName();
+        String identity = connection.getName();
         MessageRelayCommand messageRelayCommand = new MessageRelayCommand(identity, this.content);
         String jsonMessage = gson.toJson(messageRelayCommand);
 //        System.out.println("Send: " + jsonMessage);
 
-        chatManager.broadCastToCurrentRoom(serverConnection, jsonMessage, null);
+        chatManager.broadCastToCurrentRoom(connection, jsonMessage, null);
 
     }
 }

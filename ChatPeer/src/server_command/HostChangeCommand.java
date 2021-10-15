@@ -1,7 +1,7 @@
 package server_command;
 
 import server.ChatManager;
-import server.ServerConnection;
+import server.IConnection;
 
 public class HostChangeCommand extends ServerCommand {
     private String host;
@@ -12,9 +12,11 @@ public class HostChangeCommand extends ServerCommand {
     }
 
     @Override
-    public void execute(ServerConnection serverConnection) {
-        ChatManager chatManager = serverConnection.getChatManager();
-        /** host is referring to the peer's server host; this list is maintained for list neighbours request */
-        chatManager.addClientToConnectionList(serverConnection, host);
+    public void execute(IConnection connection) {
+        if (connection.getConnType().equals("remote")){
+            ChatManager chatManager = connection.getChatManager();
+            /** host is referring to the peer's server host; this list is maintained for list neighbours request */
+            chatManager.addClientToConnectionList(connection, host);
+        }
     }
 }

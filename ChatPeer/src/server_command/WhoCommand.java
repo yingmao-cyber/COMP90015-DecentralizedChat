@@ -3,8 +3,7 @@ package server_command;
 import client_command.RoomContentsCommand;
 import com.google.gson.Gson;
 import server.ChatManager;
-import server.ServerConnection;
-
+import server.IConnection;
 import java.util.ArrayList;
 
 public class WhoCommand extends ServerCommand{
@@ -16,12 +15,12 @@ public class WhoCommand extends ServerCommand{
     }
 
     @Override
-    public void execute(ServerConnection serverConnection) {
+    public void execute(IConnection connection) {
 
-        ChatManager chatManager = serverConnection.getChatManager();
+        ChatManager chatManager = connection.getChatManager();
         String jsonMessage = buildRoomContent(chatManager, roomid);
 //        System.out.println("Send: " + jsonMessage);
-        chatManager.sendToOneClient(jsonMessage, serverConnection);
+        chatManager.sendToOneClient(jsonMessage, connection);
     }
 
 

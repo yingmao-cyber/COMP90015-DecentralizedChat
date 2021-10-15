@@ -1,6 +1,7 @@
 package local_command;
 
 import client.ChatClient;
+import client_command.HelpCommand;
 
 import java.util.ArrayList;
 
@@ -45,14 +46,13 @@ public class LocalCommandFactory {
                     return new CreateRoomCommand(inputArray.get(1));
                 case "delete":
                     return new DeleteCommand(inputArray.get(1));
-                case "help":
-                    return new HelpCommand();
                 case "kick":
+                    if (inputArray.size() == 1){
+                        System.out.println("Command " + userInput + " is invalid.");
+                        return null;
+                    }
                     return new KickCommand(inputArray.get(1));
-
-
                 default:
-                    System.out.println("Command " + userInput + " is invalid.");
                     return null;
             }
         }

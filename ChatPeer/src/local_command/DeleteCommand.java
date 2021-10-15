@@ -4,7 +4,7 @@ import client.ChatClient;
 import client_command.RoomChangeCommand;
 import com.google.gson.Gson;
 import server.ChatManager;
-import server.ServerConnection;
+import server.IConnection;
 
 import java.util.ArrayList;
 
@@ -22,14 +22,16 @@ public class DeleteCommand extends LocalCommand {
         if (!chatManager.isRoomIdExist(roomid)){
             System.out.println(roomid + " does not exist.");
         }
-        ArrayList<ServerConnection> clientsInRoom = chatManager.getChatRooms(roomid);
+        ArrayList<IConnection> clientsInRoom = chatManager.getChatRooms(roomid);
         /** treat as clients join the empty room */
-        for (ServerConnection client: clientsInRoom){
-            RoomChangeCommand roomChangeCommand = new RoomChangeCommand(chatClient.getIdentity(), chatClient.getRoomid(), "d");
+        for (IConnection client: clientsInRoom){
+            RoomChangeCommand roomChangeCommand = new RoomChangeCommand(chatClient.getIdentity(),
+                    chatClient.getRoomid(), "d");
             String jsonMessage = gson.toJson(roomChangeCommand);
             chatManager.sendToOneClient(jsonMessage, client);
             client.setCurrentChatRoom("");
         }
         chatManager.removeRoom(roomid);
+        chatClient.printPrefix();
     }
 }

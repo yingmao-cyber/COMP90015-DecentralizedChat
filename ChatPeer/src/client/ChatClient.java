@@ -1,6 +1,8 @@
 package client;
 
 import com.google.gson.Gson;
+import server.ChatManager;
+import server.LocalPeerConnection;
 import server_command.HostChangeCommand;
 import server_command.ServerCommand;
 
@@ -24,12 +26,20 @@ public class ChatClient {
     private String roomToCreate = null;
     private String roomToDelete = null;
     private boolean isBundleMsg = false;
+    private ChatManager chatManager;
+    private LocalPeerConnection localPeerConnection = null;
 
-    public ChatClient(String localServerHost, int iPort){
+    public ChatClient(ChatManager chatManager, String localServerHost, int iPort){
         this.localServerHost = localServerHost;
+        this.chatManager = chatManager;
         this.iPort = iPort;
         this.gson = new Gson();
     }
+
+    public boolean isConnectedLocally(){
+        return localPeerConnection != null;
+    }
+
 
     public void setQuitFlag(boolean quitFlag){
         this.quitFlag = quitFlag;
@@ -60,6 +70,10 @@ public class ChatClient {
         return this.socket;
     }
 
+    public void setLocalPeerConnection(LocalPeerConnection localPeerConnection) {
+        this.localPeerConnection = localPeerConnection;
+    }
+
     /** Connect to peer server:
      * remoteServerHost: 142.250.70,.238
      * remoteServerListeningPort: 4444
@@ -70,6 +84,10 @@ public class ChatClient {
     public void makeConnection(String remoteServerHost, int specifiedLocalPort) throws IOException {
         // new connection request will be ignored if client is currently connected to a remote server
         quitFlag = false;
+        if (localPeerConnection != null){
+            chatManager.removeClientConnection(localPeerConnection);
+            localPeerConnection = null;
+        }
         if (remoteServerHost != null){
             String[] arrayList = remoteServerHost.split(":");
             String remoteServerIP = arrayList[0];
@@ -95,6 +113,7 @@ public class ChatClient {
 
             } else {
                 this.socket = new Socket(remoteServerIP, remoteServerPort);
+                this.socket.setReuseAddress(true);
             }
             this.remoteServerHost = remoteServerHost;
 
@@ -107,8 +126,10 @@ public class ChatClient {
 
 
     public void printPrefix() {
-        if (remoteServerHost != null){
+        if (identity != null && !identity.equals("")){
             System.out.print("[" + roomid + "] " + identity + "> ");
+        } else {
+            System.out.print(">");
         }
     }
 

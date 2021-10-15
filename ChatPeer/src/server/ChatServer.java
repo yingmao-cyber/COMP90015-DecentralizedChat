@@ -1,12 +1,11 @@
 package server;
 
-import client_command.NewIdentityCommand;
+import client_command.RoomChangeCommand;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
@@ -49,12 +48,11 @@ public class ChatServer extends Thread{
                 String peerIdentity = formatIPAddr(socAddr);
                 if (soc != null && !this.blockList.contains(peerIdentity)){
                     LOGGER.info("New connection received: " + soc.getRemoteSocketAddress().toString());
-                    System.out.print(">");
                     ServerConnection serverConnection = new ServerConnection(soc, chatManager, commandFactory);
                     serverConnection.start(); // start thread
                     serverConnection.setName(peerIdentity);
                     chatManager.addClientToConnectionList(serverConnection, null);
-                    String peerIdentityMessage = gson.toJson(new NewIdentityCommand(peerIdentity));
+                    String peerIdentityMessage = gson.toJson(new RoomChangeCommand(peerIdentity, "", "n"));
                     chatManager.sendToOneClient(peerIdentityMessage, serverConnection);
                 }
                 else{

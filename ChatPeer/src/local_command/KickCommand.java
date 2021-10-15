@@ -19,6 +19,5 @@ public class KickCommand extends LocalCommand{
         } else {
             System.out.println("Peer " + peerId + "block failed");
         }
-        chatClient.printPrefix();
     }
 }
