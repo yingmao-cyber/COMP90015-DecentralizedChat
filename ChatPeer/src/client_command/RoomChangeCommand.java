@@ -63,6 +63,16 @@ public class RoomChangeCommand extends ClientCommand{
             }
 
         }else if (former.equals("") && roomid.equals("")){
+            if (chatClient.getQuitFlag()){
+                try {
+                    System.out.println(identity + " leaves " + chatClient.getRoomid());
+                    chatClient.setRoomid("");
+                    chatClient.disconnect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
             chatClient.setIdentity(identity);
         }
 

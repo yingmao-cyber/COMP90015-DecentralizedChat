@@ -19,7 +19,11 @@ public class QuitCommand extends ServerCommand{
                 connection.getName(), connection.getCurrentChatRoom(), roomid);
         String jsonMessage = gson.toJson(roomChangeCommand);
 
-        chatManager.broadCastToCurrentRoom(connection, jsonMessage, null);
+        if (connection.getCurrentChatRoom().equals("")){
+            chatManager.sendToOneClient(jsonMessage, connection);
+        }else {
+            chatManager.broadCastToCurrentRoom(connection, jsonMessage, null);
+        }
 
         chatManager.removeClientConnection(connection);
     }

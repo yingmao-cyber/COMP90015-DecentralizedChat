@@ -1,11 +1,11 @@
 package client;
 
-import client_command.RoomChangeCommand;
 import local_command.ConnectCommand;
 import local_command.LocalCommand;
 import local_command.LocalCommandFactory;
 import server.ChatManager;
 import server.LocalPeerConnection;
+import server_command.QuitCommand;
 import server_command.ServerCommand;
 
 import java.io.BufferedReader;
@@ -57,10 +57,13 @@ public class LocalCommandHandler extends Thread {
                         }
                         localCommand.execute(chatClient, chatManager);
                     } else if (serverCommand != null){
-                        if (str.contains("#connect")){
-                            System.out.println("Need to quit first to be able to connect to new peer.");
-                        }
                         serverCommand.execute(localPeerConnection);
+                        if (serverCommand instanceof QuitCommand){
+                            if (chatClient.isConnectedLocally()){
+                                chatManager.leaveRoom(localPeerConnection, chatClient.getRoomid());
+                                chatClient.setRoomid("");
+                            }
+                        }
                     }
                 }
             } catch (IOException e) {

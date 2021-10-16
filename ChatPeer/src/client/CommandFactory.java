@@ -91,6 +91,7 @@ public class CommandFactory {
                 case "message":
                     return new MessageCommand(arg);
                 case "connect":
+                    System.out.println("Need to quit first to be able to connect to new peer.");
                     return null;
                 case "help":
                     return new HelpCommand();
