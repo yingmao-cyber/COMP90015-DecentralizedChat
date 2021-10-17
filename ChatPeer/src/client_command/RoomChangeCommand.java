@@ -30,9 +30,9 @@ public class RoomChangeCommand extends ClientCommand{
 //        System.out.println("former: " + former + ", identity: " + identity + " | " +  chatClient.getIdentity() + ", " + "roomid: " + roomid);
         /** room id changed to " " */
         if (roomid.equals("") && (!former.equals(roomid))){
+            System.out.println(identity + " leaves " + chatClient.getRoomid());
            if (identity.equals(chatClient.getIdentity()) && chatClient.getQuitFlag()){
                 try {
-                    System.out.println(identity + " leaves " + chatClient.getRoomid());
                     chatClient.setRoomid("");
                     chatClient.disconnect();
                 } catch (Exception e) {
@@ -41,16 +41,13 @@ public class RoomChangeCommand extends ClientCommand{
                 return;
             }
             else if (identity.equals(chatClient.getIdentity())) {
+                /** for room deletion */
                chatClient.setRoomid("");
-               System.out.println();
                if (!chatClient.isConnectedLocally()){
                    chatClient.printPrefix();
                }
                return;
-           } else
-            {
-                System.out.println(identity + " leaves " + chatClient.getRoomid());
-            }
+           }
         } else if (!former.equals(roomid)){
             if (identity.equals(chatClient.getIdentity())){
                 chatClient.setRoomid(roomid);

@@ -51,10 +51,6 @@ public class LocalCommandHandler extends Thread {
                     LocalCommand localCommand = localCommandFactory.convertUserInputToCommand(str);
                     ServerCommand serverCommand = clientCommandFactory.convertUserInputToCommand(str);
                     if (localCommand != null){
-                        if(localCommand instanceof ConnectCommand){
-                            chatManager.leaveRoom(localPeerConnection, chatClient.getRoomid());
-                            chatClient.setRoomid("");
-                        }
                         localCommand.execute(chatClient, chatManager);
                     } else if (serverCommand != null){
                         serverCommand.execute(localPeerConnection);

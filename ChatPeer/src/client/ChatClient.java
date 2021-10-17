@@ -36,6 +36,10 @@ public class ChatClient {
         this.gson = new Gson();
     }
 
+    public LocalPeerConnection getLocalPeerConnection() {
+        return localPeerConnection;
+    }
+
     public boolean isConnectedLocally(){
         return localPeerConnection != null;
     }
@@ -84,14 +88,21 @@ public class ChatClient {
     public void makeConnection(String remoteServerHost, int specifiedLocalPort) throws IOException {
         // new connection request will be ignored if client is currently connected to a remote server
         quitFlag = false;
-        if (localPeerConnection != null){
-            chatManager.removeClientConnection(localPeerConnection);
-            localPeerConnection = null;
-        }
         if (remoteServerHost != null){
             String[] arrayList = remoteServerHost.split(":");
             String remoteServerIP = arrayList[0];
-            int remoteServerPort = Integer.parseInt(arrayList[1]);
+            int remoteServerPort;
+            try {
+                remoteServerPort  = Integer.parseInt(arrayList[1]);
+            } catch (Exception e){
+                System.out.println("Port should only contain numbers. Invalid port is given.");
+                return;
+            }
+            if (localPeerConnection != null){
+                chatManager.removeClientConnection(localPeerConnection);
+                localPeerConnection = null;
+            }
+
             System.out.println("remoteServerIP: " + remoteServerIP + " | remoteServerPort: " + remoteServerPort
                     + " | specifiedLocalPort: " + specifiedLocalPort + " | iPort: " + iPort +
                     " | localServerHost: " + localServerHost

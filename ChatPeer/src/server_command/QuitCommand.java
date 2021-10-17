@@ -24,7 +24,6 @@ public class QuitCommand extends ServerCommand{
         }else {
             chatManager.broadCastToCurrentRoom(connection, jsonMessage, null);
         }
-
         chatManager.removeClientConnection(connection);
     }
 }
