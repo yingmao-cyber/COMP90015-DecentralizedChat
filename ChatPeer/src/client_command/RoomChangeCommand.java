@@ -22,12 +22,12 @@ public class RoomChangeCommand extends ClientCommand{
     public void execute(ChatClient chatClient) {
         /** To distinguish an invalid room request from empty room, null is used.*/
         if (roomid == null){
-            System.out.println("\nThe requested room is invalid or non existent");
+            System.out.println("\nThe requested room " + roomid + " is invalid or non existent");
             chatClient.printPrefix();
             return;
         }
 
-        System.out.println("former: " + former + ", identity: " + identity + " | " +  chatClient.getIdentity() + ", " + "roomid: " + roomid);
+//        System.out.println("former: " + former + ", identity: " + identity + " | " +  chatClient.getIdentity() + ", " + "roomid: " + roomid);
         /** room id changed to " " */
         if (roomid.equals("") && (!former.equals(roomid))){
            if (identity.equals(chatClient.getIdentity()) && chatClient.getQuitFlag()){
