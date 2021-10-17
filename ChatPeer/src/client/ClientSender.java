@@ -65,7 +65,7 @@ class ClientSender extends Thread{
             } catch (IOException e) {
                 e.printStackTrace();
                 connection_alive = false;
-            }
+            } 
         }
 
         this.close();

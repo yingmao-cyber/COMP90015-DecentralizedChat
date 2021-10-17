@@ -20,23 +20,14 @@ public class RoomChangeCommand extends ClientCommand{
 
     @Override
     public void execute(ChatClient chatClient) {
+        /** To distinguish an invalid room request from empty room, null is used.*/
         if (roomid == null){
             System.out.println("\nThe requested room is invalid or non existent");
             chatClient.printPrefix();
             return;
         }
-        /** for room deletion */
-        if (roomid.equals("d")){
-            chatClient.setRoomid("");
-            System.out.println();
-            if (!chatClient.isConnectedLocally()){
-                chatClient.printPrefix();
-            }
-            return;
-        }
-        /** for the initial new room */
 
-//        System.out.println("former: " + former + ", identity: " + identity + ", roomid: " + roomid);
+        System.out.println("former: " + former + ", identity: " + identity + " | " +  chatClient.getIdentity() + ", " + "roomid: " + roomid);
         /** room id changed to " " */
         if (roomid.equals("") && (!former.equals(roomid))){
            if (identity.equals(chatClient.getIdentity()) && chatClient.getQuitFlag()){
@@ -49,7 +40,15 @@ public class RoomChangeCommand extends ClientCommand{
                 }
                 return;
             }
-            else {
+            else if (identity.equals(chatClient.getIdentity())) {
+               chatClient.setRoomid("");
+               System.out.println();
+               if (!chatClient.isConnectedLocally()){
+                   chatClient.printPrefix();
+               }
+               return;
+           } else
+            {
                 System.out.println(identity + " leaves " + chatClient.getRoomid());
             }
         } else if (!former.equals(roomid)){

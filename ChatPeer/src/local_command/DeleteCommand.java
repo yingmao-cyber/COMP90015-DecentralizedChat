@@ -25,8 +25,8 @@ public class DeleteCommand extends LocalCommand {
         ArrayList<IConnection> clientsInRoom = chatManager.getChatRooms(roomid);
         /** treat as clients join the empty room */
         for (IConnection client: clientsInRoom){
-            RoomChangeCommand roomChangeCommand = new RoomChangeCommand(chatClient.getIdentity(),
-                    chatClient.getRoomid(), "d");
+            RoomChangeCommand roomChangeCommand = new RoomChangeCommand(client.getName(),
+                    roomid, "");
             String jsonMessage = gson.toJson(roomChangeCommand);
             chatManager.sendToOneClient(jsonMessage, client);
             client.setCurrentChatRoom("");
