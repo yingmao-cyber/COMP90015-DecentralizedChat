@@ -4,6 +4,7 @@ import client_command.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import server_command.*;
+import server_command.HelpCommand;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -12,13 +13,18 @@ import java.util.ArrayList;
 public class CommandFactory {
     private final Gson gson = new Gson();
     private ChatClient chatClient;
+    private final ArrayList<String> localCommandArray = new ArrayList<>();
     private final ArrayList<String> commandRequiresNoInput = new ArrayList<>();
 
     public CommandFactory(ChatClient chatClient){
         this.commandRequiresNoInput.add("listneighbors");
         this.commandRequiresNoInput.add("list");
         this.commandRequiresNoInput.add("quit");
+        this.commandRequiresNoInput.add("help");
         this.chatClient = chatClient;
+        this.localCommandArray.add("createroom");
+        this.localCommandArray.add("delete");
+        this.localCommandArray.add("kick");
     }
 
     /**
@@ -84,10 +90,19 @@ public class CommandFactory {
                     return new ListCommand();
                 case "message":
                     return new MessageCommand(arg);
+                case "connect":
+                    if (!chatClient.isConnectedLocally()){
+                        System.out.println("Need to quit first to be able to connect to new peer.");
+                    }
+                    return null;
+                case "help":
+                    return new HelpCommand();
                 case "quit":
                     return new QuitCommand();
                 default:
-                    System.out.println("Command " + userInput + " is invalid.");
+                    if (!localCommandArray.contains(type)){
+                        System.out.println("Command " + userInput + " is invalid.");
+                    }
                     return null;
             }
         }
@@ -114,14 +129,12 @@ public class CommandFactory {
         String type = gson.fromJson(jsonMessage, JsonObject.class).get("type").getAsString();
 
         switch(type){
-            case "newidentity":
-                return this.generateCommand(jsonMessage, NewIdentityCommand.class);
+            case "help":
+                return this.generateCommand(jsonMessage, client_command.HelpCommand.class);
             case "message":
                 return this.generateCommand(jsonMessage, MessageRelayCommand.class);
             case "roomchange":
                 return this.generateCommand(jsonMessage, RoomChangeCommand.class);
-            case "roomchangeondelete":
-                return this.generateCommand(jsonMessage, RoomChangeOnDelete.class);
             case "roomcontents":
                 return this.generateCommand(jsonMessage, RoomContentsCommand.class);
             case "roomlist":

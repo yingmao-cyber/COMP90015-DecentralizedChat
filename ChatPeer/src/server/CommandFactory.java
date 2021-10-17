@@ -34,6 +34,8 @@ public class CommandFactory {
                 return this.generateCommand(jsonMessage, ListNeighborCommand.class);
             case "join":
                 return this.generateCommand(jsonMessage, JoinCommand.class);
+            case "help":
+                return this.generateCommand(jsonMessage, HelpCommand.class);
             case "who":
                 return this.generateCommand(jsonMessage, WhoCommand.class);
             case "list":

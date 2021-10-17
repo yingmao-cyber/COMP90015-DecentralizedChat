@@ -1,6 +1,8 @@
 package client;
 
 import com.google.gson.Gson;
+import server.ChatManager;
+import server.LocalPeerConnection;
 import server_command.HostChangeCommand;
 import server_command.ServerCommand;
 
@@ -24,12 +26,24 @@ public class ChatClient {
     private String roomToCreate = null;
     private String roomToDelete = null;
     private boolean isBundleMsg = false;
+    private ChatManager chatManager;
+    private LocalPeerConnection localPeerConnection = null;
 
-    public ChatClient(String localServerHost, int iPort){
+    public ChatClient(ChatManager chatManager, String localServerHost, int iPort){
         this.localServerHost = localServerHost;
+        this.chatManager = chatManager;
         this.iPort = iPort;
         this.gson = new Gson();
     }
+
+    public LocalPeerConnection getLocalPeerConnection() {
+        return localPeerConnection;
+    }
+
+    public boolean isConnectedLocally(){
+        return localPeerConnection != null;
+    }
+
 
     public void setQuitFlag(boolean quitFlag){
         this.quitFlag = quitFlag;
@@ -60,6 +74,10 @@ public class ChatClient {
         return this.socket;
     }
 
+    public void setLocalPeerConnection(LocalPeerConnection localPeerConnection) {
+        this.localPeerConnection = localPeerConnection;
+    }
+
     /** Connect to peer server:
      * remoteServerHost: 142.250.70,.238
      * remoteServerListeningPort: 4444
@@ -73,7 +91,18 @@ public class ChatClient {
         if (remoteServerHost != null){
             String[] arrayList = remoteServerHost.split(":");
             String remoteServerIP = arrayList[0];
-            int remoteServerPort = Integer.parseInt(arrayList[1]);
+            int remoteServerPort;
+            try {
+                remoteServerPort  = Integer.parseInt(arrayList[1]);
+            } catch (Exception e){
+                System.out.println("Port should only contain numbers. Invalid port is given.");
+                return;
+            }
+            if (localPeerConnection != null){
+                chatManager.removeClientConnection(localPeerConnection);
+                localPeerConnection = null;
+            }
+
             System.out.println("remoteServerIP: " + remoteServerIP + " | remoteServerPort: " + remoteServerPort
                     + " | specifiedLocalPort: " + specifiedLocalPort + " | iPort: " + iPort +
                     " | localServerHost: " + localServerHost
@@ -81,10 +110,21 @@ public class ChatClient {
 
             if (specifiedLocalPort != -1){
                 this.socket = new Socket(remoteServerIP, remoteServerPort, null,  specifiedLocalPort);
+                this.socket.setReuseAddress(true);
             } else if (iPort != -1) {
-                this.socket = new Socket(remoteServerIP, remoteServerPort, null, iPort);
+                try{
+                    this.socket = new Socket(remoteServerIP, remoteServerPort, null, iPort);
+                    this.socket.setReuseAddress(true);
+                }catch(Exception e) {
+                    System.out.println("Connection to server " +  remoteServerPort +  " failed");
+                    disconnect();
+                    e.printStackTrace();
+                    return;
+                }
+
             } else {
                 this.socket = new Socket(remoteServerIP, remoteServerPort);
+                this.socket.setReuseAddress(true);
             }
             this.remoteServerHost = remoteServerHost;
 
@@ -97,8 +137,10 @@ public class ChatClient {
 
 
     public void printPrefix() {
-        if (remoteServerHost != null){
+        if (identity != null && !identity.equals("")){
             System.out.print("[" + roomid + "] " + identity + "> ");
+        } else {
+            System.out.print(">");
         }
     }
 
@@ -120,21 +162,30 @@ public class ChatClient {
             /** clientReceiver is a thread responsible for receiving message
              * clientSender is a thread responsible for sending message
              * */
-            clientReceiver.close();
-            clientSender.close();
-        } finally {
+//            clientReceiver.close();
+//            clientSender.close();
+            disconnect();
+        }
+        finally {
             if (socket != null){
                 System.out.println("Disconnected from localhost");
-                socket.close();
             }
+            else {
+                System.out.println("Connection failed");
+            }
+            socket.close();
         }
 
     }
 
-    public void disconnect() {
+    public void disconnect() throws IOException {
         if (clientReceiver != null){
             clientReceiver.setConnection_alive(false);
+            clientReceiver.close();
             remoteServerHost = null;
+        }
+        if(clientSender != null){
+            clientSender.close();
         }
         connected = false;
     }

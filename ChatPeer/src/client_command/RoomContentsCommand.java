@@ -23,6 +23,7 @@ public class RoomContentsCommand extends ClientCommand{
         // if no one in the room, displays "room is empty"
         if (identities.size() == 0 ){
             System.out.println(roomId + " is empty.");
+            chatClient.printPrefix();
             return;
         }
         else {

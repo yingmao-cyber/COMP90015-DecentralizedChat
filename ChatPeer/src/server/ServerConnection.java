@@ -9,12 +9,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ServerConnection extends Thread {
+public class ServerConnection  extends Thread implements IConnection{
     private Socket socket;
     private ChatManager chatManager;
     private CommandFactory commandFactory;
     private PrintWriter writer;
     private BufferedReader reader;
+    private final String connType = "remote";
     private boolean connection_alive;
     private String currentChatRoom;
 
@@ -26,6 +27,11 @@ public class ServerConnection extends Thread {
         this.writer = new PrintWriter(socket.getOutputStream());
         setName("");
         setCurrentChatRoom("");
+    }
+
+    @Override
+    public String getConnType() {
+        return connType;
     }
 
     public Socket getSocket(){

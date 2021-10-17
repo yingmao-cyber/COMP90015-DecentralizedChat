@@ -53,13 +53,9 @@ class ClientSender extends Thread{
                         // convert user input to command and convert command to json object
                         // then send this json command object to server
                         if (str.equals("#quit")){
-                            if (chatClient.getRoomid().equals("")){
-                                System.out.println("Need to join a room to be able to quit.");
-                            } else {
-                                chatClient.setQuitFlag(true);
-                                this.writer.println(jsonMessage);
-                                connection_alive = false;
-                            }
+                            chatClient.setQuitFlag(true);
+                            this.writer.println(jsonMessage);
+                            connection_alive = false;
                         } else {
                             this.writer.println(jsonMessage);
                         }
@@ -69,7 +65,7 @@ class ClientSender extends Thread{
             } catch (IOException e) {
                 e.printStackTrace();
                 connection_alive = false;
-            }
+            } 
         }
 
         this.close();

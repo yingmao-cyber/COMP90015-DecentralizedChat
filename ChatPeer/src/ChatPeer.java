@@ -1,11 +1,13 @@
 import client.ChatClient;
+import client.CommandFactory;
 import client.LocalCommandHandler;
 import org.apache.commons.cli.*;
 import server.ChatManager;
 import server.ChatServer;
+import server.LocalPeerConnection;
 
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class ChatPeer {
     private static final int DEFAULT_PORT = 4444;
@@ -17,7 +19,7 @@ public class ChatPeer {
      * java -jar chatserver.jar -p port
      * -p port is optional
      * */
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) throws IOException {
         int listeningPort;
         int iPort;
         String ipAddress = InetAddress.getLocalHost().toString();
@@ -50,12 +52,18 @@ public class ChatPeer {
 
         System.out.println("Server IP: " + ChatServer.formatIPAddr(ipAddress) + " | listeningPort: " + listeningPort + " | iPort: " + iPort);
 
-        new ChatServer(chatManager, listeningPort).start();
+        ChatServer chatServer = new ChatServer(chatManager, listeningPort);
+        chatServer.start();
 
         String localServerHost = ChatServer.formatIPAddr(ipAddress) + ":" + listeningPort;
-        chatClient = new ChatClient(localServerHost, iPort);
+        chatClient = new ChatClient(chatManager, localServerHost, iPort);
 
-        new LocalCommandHandler(chatClient, chatManager).start();
+        client.CommandFactory clientCommandFactory = new CommandFactory(chatClient);
+
+        LocalPeerConnection localPeerConnection = new LocalPeerConnection(
+                chatClient, chatManager, clientCommandFactory, localServerHost);
+        new LocalCommandHandler(chatClient, chatManager, clientCommandFactory, localPeerConnection).start();
+
     }
 
 }
