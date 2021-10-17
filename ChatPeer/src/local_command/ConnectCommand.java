@@ -21,7 +21,6 @@ public class ConnectCommand extends LocalCommand {
     public void execute(ChatClient chatClient, ChatManager chatManager){
        Gson gson = new Gson();
        try {
-           String roomid = chatClient.getRoomid();
            if (chatClient.isConnectedLocally()){
 
                LocalPeerConnection localPeerConnection = chatClient.getLocalPeerConnection();

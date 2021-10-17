@@ -47,7 +47,7 @@ public class ChatServer extends Thread{
                 String socAddr = soc.getRemoteSocketAddress().toString();
                 String peerIdentity = formatIPAddr(socAddr);
                 if (soc != null && !this.blockList.contains(peerIdentity)){
-                    LOGGER.info("New connection received: " + soc.getRemoteSocketAddress().toString());
+                    System.out.println("New connection received: " + soc.getRemoteSocketAddress().toString());
                     ServerConnection serverConnection = new ServerConnection(soc, chatManager, commandFactory);
                     serverConnection.start(); // start thread
                     serverConnection.setName(peerIdentity);
