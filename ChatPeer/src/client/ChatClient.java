@@ -103,10 +103,10 @@ public class ChatClient {
                 localPeerConnection = null;
             }
 
-            System.out.println("remoteServerIP: " + remoteServerIP + " | remoteServerPort: " + remoteServerPort
-                    + " | specifiedLocalPort: " + specifiedLocalPort + " | iPort: " + iPort +
-                    " | localServerHost: " + localServerHost
-            );
+//            System.out.println("remoteServerIP: " + remoteServerIP + " | remoteServerPort: " + remoteServerPort
+//                    + " | specifiedLocalPort: " + specifiedLocalPort + " | iPort: " + iPort +
+//                    " | localServerHost: " + localServerHost
+//            );
 
             if (specifiedLocalPort != -1){
                 this.socket = new Socket(remoteServerIP, remoteServerPort, null,  specifiedLocalPort);

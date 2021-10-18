@@ -19,6 +19,8 @@ public class CreateRoomCommand extends LocalCommand {
         } else {
             System.out.println("Room " + roomid + " is invalid or already in use.");
         }
-        chatClient.printPrefix();
+        if (!chatClient.isConnectedLocally()){
+            chatClient.printPrefix();
+        }
     }
 }

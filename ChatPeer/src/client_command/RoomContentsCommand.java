@@ -23,7 +23,10 @@ public class RoomContentsCommand extends ClientCommand{
         // if no one in the room, displays "room is empty"
         if (identities.size() == 0 ){
             System.out.println(roomId + " is empty.");
-            chatClient.printPrefix();
+            if (!chatClient.isConnectedLocally()){
+                System.out.println();
+                chatClient.printPrefix();
+            }
             return;
         }
         else {
@@ -32,10 +35,12 @@ public class RoomContentsCommand extends ClientCommand{
                 print.append(str).append(" ");
             }
         }
-        System.out.println();
+        if (!chatClient.isConnectedLocally()){
+            System.out.println();
+        }
         System.out.println(print);
 
-        if (!chatClient.isBundleMsg()){
+        if (!chatClient.isBundleMsg() && !chatClient.isConnectedLocally()){
             chatClient.printPrefix();
         }
 

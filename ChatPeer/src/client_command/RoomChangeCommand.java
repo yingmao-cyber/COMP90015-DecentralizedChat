@@ -22,8 +22,13 @@ public class RoomChangeCommand extends ClientCommand{
     public void execute(ChatClient chatClient) {
         /** To distinguish an invalid room request from empty room, null is used.*/
         if (roomid == null){
-            System.out.println("\nThe requested room " + roomid + " is invalid or non existent");
-            chatClient.printPrefix();
+            if (!chatClient.isConnectedLocally()){
+                System.out.println();
+            }
+            System.out.println("The requested room is invalid or non existent");
+            if (!chatClient.isConnectedLocally()){
+                chatClient.printPrefix();
+            }
             return;
         }
 
@@ -72,7 +77,7 @@ public class RoomChangeCommand extends ClientCommand{
             chatClient.setIdentity(identity);
         }
 
-        if (!chatClient.isBundleMsg() ){
+        if (!chatClient.isBundleMsg() && !chatClient.isConnectedLocally()){
             chatClient.printPrefix();
         }
     }

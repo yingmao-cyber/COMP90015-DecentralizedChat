@@ -61,7 +61,9 @@ public class RoomListCommand extends ClientCommand{
                 }
             }
             String printStr = print.toString().stripTrailing();
-            System.out.println();
+            if (!chatClient.isConnectedLocally()){
+                System.out.println();
+            }
             System.out.println(printStr);
         }
 
@@ -69,7 +71,9 @@ public class RoomListCommand extends ClientCommand{
             // since this is the last msg in the bundle, set back to false
             chatClient.setBundleMsg(false);
         }
-        chatClient.printPrefix();
+        if (!chatClient.isConnectedLocally()){
+            chatClient.printPrefix();
+        }
     }
 
 

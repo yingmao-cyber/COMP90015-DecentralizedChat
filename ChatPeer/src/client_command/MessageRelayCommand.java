@@ -18,6 +18,8 @@ public class MessageRelayCommand extends ClientCommand{
     @Override
     public void execute(ChatClient chatClient) {
         System.out.println(identity + ": " + content);
-        chatClient.printPrefix();
+        if (!chatClient.isConnectedLocally()){
+            chatClient.printPrefix();
+        }
     }
 }
