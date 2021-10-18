@@ -22,7 +22,7 @@ public class ChatPeer {
     public static void main(String[] args) throws IOException {
         int listeningPort;
         int iPort;
-        String ipAddress = InetAddress.getLocalHost().toString();
+        String ipAddress = InetAddress.getLocalHost().getHostAddress();
         CommandLineParser parser = new BasicParser();
         Options options = new Options();
         options.addOption("p", "p", true, "listening port");
@@ -49,13 +49,12 @@ public class ChatPeer {
             listeningPort = DEFAULT_PORT;
             iPort = -1;
         }
-
-        System.out.println("Server IP: " + ChatServer.formatIPAddr(ipAddress) + " | listeningPort: " + listeningPort + " | iPort: " + iPort);
+        System.out.println("Server IP: " + ipAddress + " | listeningPort: " + listeningPort + " | iPort: " + iPort);
 
         ChatServer chatServer = new ChatServer(chatManager, listeningPort);
         chatServer.start();
 
-        String localServerHost = ChatServer.formatIPAddr(ipAddress) + ":" + listeningPort;
+        String localServerHost = ipAddress + ":" + listeningPort;
         chatClient = new ChatClient(chatManager, localServerHost, iPort);
 
         client.CommandFactory clientCommandFactory = new CommandFactory(chatClient);

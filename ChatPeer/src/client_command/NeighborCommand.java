@@ -13,7 +13,12 @@ public class NeighborCommand extends ClientCommand {
 
     @Override
     public void execute(ChatClient chatClient) {
-        System.out.println("\nneighbors: " + this.neighbors);
-        chatClient.printPrefix();
+        if (!chatClient.isConnectedLocally()){
+            System.out.println();
+        }
+        System.out.println("neighbors: " + this.neighbors);
+        if (!chatClient.isConnectedLocally()){
+            chatClient.printPrefix();
+        }
     }
 }

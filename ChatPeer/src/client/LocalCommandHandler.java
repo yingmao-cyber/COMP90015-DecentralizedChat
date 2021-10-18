@@ -36,7 +36,6 @@ public class LocalCommandHandler extends Thread {
     public void run(){
         connected = true;
         while (connected) {
-            System.out.println();
             chatClient.setIdentity(localPeerConnection.getName());
             chatClient.setLocalPeerConnection(localPeerConnection);
             chatClient.printPrefix();
