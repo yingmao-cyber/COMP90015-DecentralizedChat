@@ -21,8 +21,11 @@ public class ConnectCommand extends LocalCommand {
     public void execute(ChatClient chatClient, ChatManager chatManager){
        Gson gson = new Gson();
        try {
-           if (chatClient.isConnectedLocally()){
-
+           if (chatClient.isConnectedLocally() && !chatClient.getRoomid().equals("")){
+                /** Before connect, if local peer has joined a room on local server,
+                 * when it connects to another peer, this peer should leave the room and broadcast message to its room,
+                 * to achieve this, a RoomChange command is sent before connection is made
+                 * */
                LocalPeerConnection localPeerConnection = chatClient.getLocalPeerConnection();
                if (localPeerConnection != null){
 
