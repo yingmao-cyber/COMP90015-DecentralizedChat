@@ -15,6 +15,7 @@ public class ListNeighborCommand extends ServerCommand {
 
     @Override
     public void execute(IConnection connection) {
+        System.out.println("receive list neighbors from " + connection.getName());
         ChatManager chatManager = connection.getChatManager();
         HashMap<IConnection, String> peerLists = chatManager.getClientConnectionList();
         ArrayList<String> listNeighbors = new ArrayList<>();

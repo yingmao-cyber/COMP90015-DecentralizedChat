@@ -1,7 +1,10 @@
 package server;
 
+import client_command.RoomListCommand;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -18,13 +21,52 @@ public class ChatManager {
     protected static String defaultRoomName = "";
     public static final Logger LOGGER = Logger.getLogger(ChatServer.class.getName());
     private ChatServer chatServer;
+    private ArrayList<String> recvNeighbors;
+    private List<RoomListCommand.RoomInfo> recvRoomInfo;
 
     public ChatManager(){
         clientConnectionList = new HashMap<>();
         chatRooms = new HashMap<>();
         chatRooms.put(defaultRoomName, new ArrayList<>());
         connectedClients = new HashMap<>();
+        recvNeighbors = new ArrayList<>();
+        recvRoomInfo = new ArrayList<>();
 
+    }
+
+    public List<RoomListCommand.RoomInfo> getRecvRoomInfo() {
+        return recvRoomInfo;
+    }
+
+    public void setRecvRoomInfo(List<RoomListCommand.RoomInfo> recvRoomInfo) {
+        synchronized (this.recvRoomInfo){
+            this.recvRoomInfo.addAll(recvRoomInfo);
+            this.recvRoomInfo.notify();
+        }
+
+
+    }
+
+    public ArrayList<String> getRecvNeighbors() {
+        return recvNeighbors;
+    }
+
+    public void setRecvNeighbors(ArrayList<String> recvNeighbors) {
+        synchronized (this.recvNeighbors){
+            if (this.recvNeighbors != null) {
+                for (String s: recvNeighbors){
+                    this.recvNeighbors.add(s);
+                }
+                this.recvNeighbors.notify();
+            }
+        }
+    }
+    public void clearRecvNeighbors(){
+        this.recvNeighbors.clear();
+    }
+
+    public void clearRecvRoomInfos(){
+        this.recvRoomInfo.clear();
     }
 
     public void setChatServer(ChatServer cs){

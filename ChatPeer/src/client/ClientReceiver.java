@@ -17,13 +17,18 @@ public class ClientReceiver extends Thread{
     private boolean connection_alive;
     private PrintWriter writer;
 
+
     public ClientReceiver(ChatClient chatClient) throws IOException {
         this.connection_alive = true;
         this.chatClient = chatClient;
         this.socket = chatClient.getSocket();
         this.commandFactory = new CommandFactory(this.chatClient);
         this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF8"));
+//        if (!disableOutput){
+//            this.writer = new PrintWriter(this.socket.getOutputStream(), true);
+//        }
         this.writer = new PrintWriter(this.socket.getOutputStream(), true);
+
     }
 
     public void setConnection_alive(boolean connection_alive) {
@@ -43,8 +48,10 @@ public class ClientReceiver extends Thread{
         while (connection_alive) {
             try {
                 String str = reader.readLine();
-                if (str == null){
-                    System.out.println("\nWARNING: Server has closed the connection!");
+                if (str == null ){
+                    if(! chatClient.isRunningInBackground()){
+                        System.out.println("\nWARNING: Server has closed the connection!");
+                    }
                     this.connection_alive = false;
                 } else {
                     ClientCommand command = commandFactory.convertServerMessageToCommand(str);
@@ -54,7 +61,9 @@ public class ClientReceiver extends Thread{
                 }
             } catch (IOException e) {
                 this.connection_alive = false;
-                System.out.println("\nWARNING: Server has closed the connection -- Disconnect from the server");
+                if (! chatClient.isRunningInBackground()){
+                    System.out.println("\nWARNING: Server has closed the connection -- Disconnect from the server");
+                }
             }
         }
 

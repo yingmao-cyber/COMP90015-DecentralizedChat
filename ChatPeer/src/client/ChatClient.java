@@ -28,6 +28,7 @@ public class ChatClient {
     private boolean isBundleMsg = false;
     private ChatManager chatManager;
     private LocalPeerConnection localPeerConnection = null;
+    private boolean runningInBackground = false;
 
     public ChatClient(ChatManager chatManager, String localServerHost, int iPort){
         this.localServerHost = localServerHost;
@@ -36,6 +37,16 @@ public class ChatClient {
         this.gson = new Gson();
     }
 
+    public boolean isRunningInBackground() {
+        return runningInBackground;
+    }
+
+    public void setRunningInBackground(boolean runningInBackground) {
+        this.runningInBackground = runningInBackground;
+    }
+    public String getLocalServerHost() {
+        return localServerHost;
+    }
     public LocalPeerConnection getLocalPeerConnection() {
         return localPeerConnection;
     }
@@ -61,6 +72,13 @@ public class ChatClient {
         isBundleMsg = bundleMsg;
     }
 
+    public ChatManager getChatManager() {
+        return chatManager;
+    }
+
+    public ClientReceiver getClientReceiver() {
+        return clientReceiver;
+    }
 
     public void setIdentity(String identity) {
         this.identity = identity;
@@ -78,6 +96,10 @@ public class ChatClient {
         this.localPeerConnection = localPeerConnection;
     }
 
+    public PrintWriter getWriter() {
+        return writer;
+    }
+
     /** Connect to peer server:
      * remoteServerHost: 142.250.70,.238
      * remoteServerListeningPort: 4444
@@ -87,6 +109,9 @@ public class ChatClient {
      * */
     public void makeConnection(String remoteServerHost, int specifiedLocalPort) throws IOException {
         // new connection request will be ignored if client is currently connected to a remote server
+        if (!this.runningInBackground){
+            System.out.println("connect to " + remoteServerHost);
+        }
         quitFlag = false;
         if (remoteServerHost != null){
             String[] arrayList = remoteServerHost.split(":");
@@ -137,23 +162,33 @@ public class ChatClient {
 
 
     public void printPrefix() {
-        if (identity != null && !identity.equals("")){
-            System.out.print("[" + roomid + "] " + identity + "> ");
-        } else {
-            System.out.print(">");
+        if (!this.runningInBackground){
+            if (identity != null && !identity.equals("")){
+                System.out.print("[" + roomid + "] " + identity + "> ");
+            } else {
+                System.out.print(">");
+            }
         }
     }
 
     private void handle() throws IOException {
         connected = true;
         try {
-            clientSender = new ClientSender(socket, this);
-            clientReceiver = new ClientReceiver(this);
 
-            clientSender.start();
+            if (!this.runningInBackground){
+                clientSender = new ClientSender(socket, this);
+                clientSender.start();
+            }
+
+//            if (runningInBackground){
+//                clientReceiver = new ClientReceiver(this);
+//            }else{
+//                clientReceiver = new ClientReceiver(this);
+//            }
+            clientReceiver = new ClientReceiver(this);
             clientReceiver.start();
 
-            while (connected){
+            while (connected && !runningInBackground){
                 Thread.sleep(2000);
             }
 
@@ -167,13 +202,15 @@ public class ChatClient {
             disconnect();
         }
         finally {
-            if (socket != null){
+            if (socket != null && ! runningInBackground){
                 System.out.println("Disconnected from localhost");
             }
-            else {
+            else if (!runningInBackground){
                 System.out.println("Connection failed");
+                socket.close();
             }
-            socket.close();
+
+
         }
 
     }

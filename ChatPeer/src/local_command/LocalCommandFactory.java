@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class LocalCommandFactory {
     private ChatClient chatClient;
     private ArrayList<String> commandWithOneArg = new ArrayList<>();
+    private ArrayList<String> commandWithZeroArg = new ArrayList<>();
 
     public LocalCommandFactory(ChatClient chatClient){
         this.chatClient = chatClient;
@@ -14,6 +15,7 @@ public class LocalCommandFactory {
         commandWithOneArg.add("delete");
         commandWithOneArg.add("createroom");
         commandWithOneArg.add("kick");
+        commandWithZeroArg.add("searchnetwork");
     }
 
     public LocalCommand convertUserInputToCommand(String userInput){
@@ -41,7 +43,10 @@ public class LocalCommandFactory {
                 if (!prefix.equals("#")){
                     return null;
                 }
-                if (commandWithOneArg.contains(type)){
+                if (commandWithZeroArg.contains(type)){
+                    argOne = "";
+                }
+                else if (commandWithOneArg.contains(type)){
                     argOne = inputArray.get(1);
                 }
             } catch (Exception e){
@@ -67,6 +72,8 @@ public class LocalCommandFactory {
                     return new CreateRoomCommand(argOne);
                 case "delete":
                     return new DeleteCommand(argOne);
+                case "searchnetwork":
+                    return new SearchCommand();
                 case "kick":
                     if (inputArray.size() == 1){
                         System.out.println("Command " + userInput + " is invalid.");

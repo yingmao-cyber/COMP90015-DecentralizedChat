@@ -3,6 +3,7 @@ package client;
 import client_command.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import local_command.SearchCommand;
 import server_command.*;
 import server_command.HelpCommand;
 
@@ -21,6 +22,7 @@ public class CommandFactory {
         this.commandRequiresNoInput.add("list");
         this.commandRequiresNoInput.add("quit");
         this.commandRequiresNoInput.add("help");
+        this.commandRequiresNoInput.add("searchnetwork");
         this.chatClient = chatClient;
         this.localCommandArray.add("createroom");
         this.localCommandArray.add("delete");
@@ -99,8 +101,10 @@ public class CommandFactory {
                     return new HelpCommand();
                 case "quit":
                     return new QuitCommand();
+                case "searchnetwork":
+                    return null;
                 default:
-                    if (!localCommandArray.contains(type)){
+                    if (!localCommandArray.contains(type) ){
                         System.out.println("Command " + userInput + " is invalid.");
                     }
                     return null;
