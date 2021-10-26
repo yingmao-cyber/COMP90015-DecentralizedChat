@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import com.google.gson.Gson;
+import local_command.SearchCommand;
 import server_command.ServerCommand;
 
 class ClientSender extends Thread{
@@ -56,13 +57,18 @@ class ClientSender extends Thread{
                             chatClient.setQuitFlag(true);
                             this.writer.println(jsonMessage);
                             connection_alive = false;
-                        } else {
+                        }
+                        else {
                             this.writer.println(jsonMessage);
                         }
                     }
+                    else if (str.equals("#searchnetwork")){
+                        SearchCommand s = new SearchCommand();
+                        s.execute(chatClient, chatClient.getChatManager());
+                    }
                     chatClient.printPrefix();
                 }
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
                 connection_alive = false;
             } 

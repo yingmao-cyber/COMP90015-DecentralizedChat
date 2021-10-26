@@ -10,7 +10,6 @@ public class ListCommand extends ServerCommand{
 
     @Override
     public void execute(IConnection connection) {
-        System.out.println("receive list request from " + connection.getName());
         ChatManager chatManager = connection.getChatManager();
         String roomList = buildRoomList(chatManager, null, null);
 //        System.out.println("Send: " + roomList);
