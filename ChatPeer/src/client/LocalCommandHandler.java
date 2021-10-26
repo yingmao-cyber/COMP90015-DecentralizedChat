@@ -61,7 +61,7 @@ public class LocalCommandHandler extends Thread {
                         }
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 connected = false;
                 e.printStackTrace();
             }

@@ -17,9 +17,11 @@ public class RoomListCommand extends ClientCommand{
             this.rooms.add(new RoomInfo(entry.getKey(), entry.getValue()));
         }
     }
-
     @Override
     public void execute(ChatClient chatClient) {
+
+        chatClient.getChatManager().setRecvRoomInfo(rooms);
+
         String requestNewRoomId = chatClient.getRoomToCreate();
         String requestDeleteRoomId = chatClient.getRoomToDelete();
 
@@ -53,18 +55,21 @@ public class RoomListCommand extends ClientCommand{
             }
         }
         else{
-            StringBuilder print = new StringBuilder();
-            for(RoomInfo r: rooms){
-                int noOfGuests = r.getCount();
-                if (!r.getRoomid().equals("")){
-                    print.append(r.getRoomid()).append(": ").append(noOfGuests).append(noOfGuests >1? " guests\n": " guest\n");
+            if (!chatClient.isRunningInBackground()){
+                StringBuilder print = new StringBuilder();
+                for(RoomInfo r: rooms){
+                    int noOfGuests = r.getCount();
+                    if (!r.getRoomid().equals("")){
+                        print.append(r.getRoomid()).append(": ").append(noOfGuests).append(noOfGuests >1? " guests\n": " guest\n");
+                    }
                 }
+                String printStr = print.toString().stripTrailing();
+                if (!chatClient.isConnectedLocally()){
+                    System.out.println();
+                }
+                System.out.println(printStr);
             }
-            String printStr = print.toString().stripTrailing();
-            if (!chatClient.isConnectedLocally()){
-                System.out.println();
-            }
-            System.out.println(printStr);
+
         }
 
         if (chatClient.isBundleMsg()){

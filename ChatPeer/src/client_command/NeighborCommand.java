@@ -3,6 +3,7 @@ package client_command;
 import client.ChatClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NeighborCommand extends ClientCommand {
     private ArrayList<String> neighbors;
@@ -13,10 +14,12 @@ public class NeighborCommand extends ClientCommand {
 
     @Override
     public void execute(ChatClient chatClient) {
+
+        chatClient.getChatManager().setRecvNeighbors(neighbors);
+
         if (!chatClient.isConnectedLocally()){
             System.out.println();
         }
-        System.out.println("neighbors: " + this.neighbors);
         if (!chatClient.isConnectedLocally()){
             chatClient.printPrefix();
         }
