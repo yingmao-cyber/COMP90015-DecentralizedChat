@@ -11,5 +11,6 @@ public interface IConnection {
     void close();
     ChatManager getChatManager();
     String getConnType();
+    ChatServer getChatServer();
 
 }

@@ -1,5 +1,6 @@
 package server;
 
+import client.ChatClient;
 import client_command.RoomChangeCommand;
 import com.google.gson.Gson;
 
@@ -19,12 +20,14 @@ public class ChatServer extends Thread{
     public static final Logger LOGGER = Logger.getLogger(ChatServer.class.getName());
     private HashSet<String> blockList;
 
+
     public ChatServer(ChatManager chatManager, int listeningPort){
         this.chatManager = chatManager;
         this.listeningPort = listeningPort;
         this.gson = new Gson();
         this.chatManager.setChatServer(this);
         this.blockList = new HashSet<>();
+
     }
 
     public static String formatIPAddr(String ipAddr){
@@ -33,9 +36,14 @@ public class ChatServer extends Thread{
     }
 
     public void blockClient (String bc){
-        this.blockList.add(bc);
+        String[] peerId = bc.split(":");
+        String IP = peerId[0];
+        this.blockList.add(IP);
     }
 
+    public HashSet<String> getBlockList() {
+        return blockList;
+    }
 
     public void run() {
         try {
@@ -46,9 +54,10 @@ public class ChatServer extends Thread{
                 Socket soc = serverSocket.accept();
                 String socAddr = soc.getRemoteSocketAddress().toString();
                 String peerIdentity = formatIPAddr(socAddr);
-                if (soc != null && !this.blockList.contains(peerIdentity)){
-//                    System.out.println("New connection received: " + soc.getRemoteSocketAddress().toString());
-                    ServerConnection serverConnection = new ServerConnection(soc, chatManager, commandFactory);
+                String[] peerId = peerIdentity.split(":");
+                String peerIP = peerId[0];
+                if (soc != null && !this.blockList.contains(peerIP)){
+                    ServerConnection serverConnection = new ServerConnection(soc, chatManager, commandFactory, this);
                     serverConnection.start(); // start thread
                     serverConnection.setName(peerIdentity);
                     chatManager.addClientToConnectionList(serverConnection, null);

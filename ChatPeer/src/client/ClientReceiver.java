@@ -24,9 +24,6 @@ public class ClientReceiver extends Thread{
         this.socket = chatClient.getSocket();
         this.commandFactory = new CommandFactory(this.chatClient);
         this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF8"));
-//        if (!disableOutput){
-//            this.writer = new PrintWriter(this.socket.getOutputStream(), true);
-//        }
         this.writer = new PrintWriter(this.socket.getOutputStream(), true);
 
     }
@@ -64,6 +61,12 @@ public class ClientReceiver extends Thread{
                 if (! chatClient.isRunningInBackground()){
                     System.out.println("\nWARNING: Server has closed the connection -- Disconnect from the server");
                 }
+                try {
+                    chatClient.handleKicked();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+
             }
         }
 

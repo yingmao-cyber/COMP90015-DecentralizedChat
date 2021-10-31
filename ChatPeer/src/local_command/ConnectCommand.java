@@ -44,6 +44,7 @@ public class ConnectCommand extends LocalCommand {
            chatClient.makeConnection(remoteServerHost, specifiedLocalPort);
        }  catch (IOException e){
            e.printStackTrace();
+
        }
 
     }

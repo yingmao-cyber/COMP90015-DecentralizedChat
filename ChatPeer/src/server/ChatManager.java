@@ -2,10 +2,7 @@ package server;
 
 import client_command.RoomListCommand;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 
@@ -22,7 +19,13 @@ public class ChatManager {
     public static final Logger LOGGER = Logger.getLogger(ChatServer.class.getName());
     private ChatServer chatServer;
     private ArrayList<String> recvNeighbors;
-    private List<RoomListCommand.RoomInfo> recvRoomInfo;
+    private final List<RoomListCommand.RoomInfo> recvRoomInfo;
+    private ArrayList<String> recvServerBlockingPeers;
+    private volatile boolean isReceivedBlockingPeers = false;
+    private volatile boolean isCurrentMigrationSuccessful;
+    private HashSet<String> connectionFailedPeers;
+    private volatile boolean connectionFailedAlert;
+
 
     public ChatManager(){
         clientConnectionList = new HashMap<>();
@@ -31,7 +34,52 @@ public class ChatManager {
         connectedClients = new HashMap<>();
         recvNeighbors = new ArrayList<>();
         recvRoomInfo = new ArrayList<>();
+        recvServerBlockingPeers = new ArrayList<>();
+        isCurrentMigrationSuccessful = false;
+        connectionFailedPeers = new HashSet<>();
+        connectionFailedAlert = false;
+    }
 
+    public boolean isReceivedBlockingPeers() {
+        return isReceivedBlockingPeers;
+    }
+
+    public void setReceivedBlockingPeers(boolean receivedBlockingPeers) {
+        isReceivedBlockingPeers = receivedBlockingPeers;
+    }
+
+    public void setConnectionFailedAlert(boolean connectionFailedAlert) {
+        this.connectionFailedAlert = connectionFailedAlert;
+    }
+
+    public boolean isConnectionFailedAlert() {
+        return connectionFailedAlert;
+    }
+
+    public void addConnectionFailedPeer(String peerAddress) {
+        this.connectionFailedPeers.add(peerAddress);
+    }
+
+    public boolean isCurrentMigrationSuccessful() {
+        return isCurrentMigrationSuccessful;
+    }
+
+    public void setCurrentMigrationSuccessful(boolean currentMigrationSuccessful) {
+        isCurrentMigrationSuccessful = currentMigrationSuccessful;
+    }
+
+    public ArrayList<String> getRecvServerBlockingPeers() {
+        return recvServerBlockingPeers;
+    }
+
+    public void setRecvServerBlockingPeers(List<String> recvServerBlockingPeers) {
+        synchronized (this.recvServerBlockingPeers){
+            this.recvServerBlockingPeers.addAll(recvServerBlockingPeers);
+            this.recvServerBlockingPeers.notify();
+        }
+    }
+    public void clearRecvServerBlockingPeers(){
+        this.recvServerBlockingPeers.clear();
     }
 
     public List<RoomListCommand.RoomInfo> getRecvRoomInfo() {
@@ -93,6 +141,15 @@ public class ChatManager {
         return chatRooms.getOrDefault(roomid, new ArrayList<>());
     }
 
+    public boolean hasChatRoom(String roomid){
+        synchronized (chatRooms){
+            if (chatRooms.getOrDefault(roomid, null) == null ){
+                return false;
+            }
+            return true;
+        }
+    }
+
     public  void removeClientConnection(IConnection connection){
         synchronized (clientConnectionList){
             clientConnectionList.remove(connection);
@@ -107,8 +164,8 @@ public class ChatManager {
     }
 
     public void broadCastAllRooms(String message, IConnection ignore){
-        for (ArrayList<IConnection> clients : this.chatRooms.values()){
-            synchronized (clients){
+        synchronized (this.chatRooms){
+            for (ArrayList<IConnection> clients : this.chatRooms.values()){
                 broadCastAGroup(clients,message, ignore );
             }
         }
@@ -117,7 +174,7 @@ public class ChatManager {
     public void broadCastAGroup(ArrayList<IConnection> clients, String message, IConnection ignore){
         synchronized (clients){
             for (IConnection s: clients){
-                if (ignore == null || !s.equals(ignore)){
+                if (!s.equals(ignore)){
                     try{
                         s.sendMessage(message);
                     }catch (Exception e){

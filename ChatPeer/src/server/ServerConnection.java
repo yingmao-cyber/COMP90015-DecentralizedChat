@@ -18,8 +18,9 @@ public class ServerConnection  extends Thread implements IConnection{
     private final String connType = "remote";
     private boolean connection_alive;
     private String currentChatRoom;
+    private ChatServer chatServer;
 
-    public ServerConnection(Socket socket, ChatManager chatManager, CommandFactory commandFactory) throws IOException {
+    public ServerConnection(Socket socket, ChatManager chatManager, CommandFactory commandFactory, ChatServer c) throws IOException {
         this.socket = socket;
         this.chatManager = chatManager;
         this.commandFactory = commandFactory;
@@ -27,6 +28,10 @@ public class ServerConnection  extends Thread implements IConnection{
         this.writer = new PrintWriter(socket.getOutputStream());
         setName("");
         setCurrentChatRoom("");
+        this.chatServer = c;
+    }
+    public ChatServer getChatServer() {
+        return chatServer;
     }
 
     @Override
