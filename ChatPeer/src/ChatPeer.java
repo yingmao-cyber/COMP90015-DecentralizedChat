@@ -60,7 +60,7 @@ public class ChatPeer {
         client.CommandFactory clientCommandFactory = new CommandFactory(chatClient);
 
         LocalPeerConnection localPeerConnection = new LocalPeerConnection(
-                chatClient, chatManager, clientCommandFactory, localServerHost);
+                chatClient, chatManager, clientCommandFactory, localServerHost, chatServer);
         new LocalCommandHandler(chatClient, chatManager, clientCommandFactory, localPeerConnection).start();
 
     }

@@ -29,12 +29,37 @@ public class ChatClient {
     private ChatManager chatManager;
     private LocalPeerConnection localPeerConnection = null;
     private boolean runningInBackground = false;
+    private String connectedServer;
+    private String localPort;
+    private boolean isMigrating;
 
     public ChatClient(ChatManager chatManager, String localServerHost, int iPort){
         this.localServerHost = localServerHost;
         this.chatManager = chatManager;
         this.iPort = iPort;
         this.gson = new Gson();
+        localPort = "-1";
+        isMigrating = false;
+//        this.connectedServer = "self";
+    }
+
+    public void setMigrating(boolean migrating) throws IOException {
+        isMigrating = migrating;
+        if (!migrating){
+            handle(true);
+        }
+    }
+
+    public boolean isMigrating() {
+        return isMigrating;
+    }
+
+    public String getConnectedServer() {
+        return connectedServer;
+    }
+
+    public void setConnectedServer(String connectedServer) {
+        this.connectedServer = connectedServer;
     }
 
     public boolean isRunningInBackground() {
@@ -54,8 +79,6 @@ public class ChatClient {
     public boolean isConnectedLocally(){
         return localPeerConnection != null;
     }
-
-
     public void setQuitFlag(boolean quitFlag){
         this.quitFlag = quitFlag;
     }
@@ -96,6 +119,10 @@ public class ChatClient {
         this.localPeerConnection = localPeerConnection;
     }
 
+    public ClientSender getClientSender() {
+        return clientSender;
+    }
+
     public PrintWriter getWriter() {
         return writer;
     }
@@ -120,6 +147,7 @@ public class ChatClient {
             try {
                 remoteServerPort  = Integer.parseInt(arrayList[1]);
             } catch (Exception e){
+
                 System.out.println("Port should only contain numbers. Invalid port is given.");
                 return;
             }
@@ -128,12 +156,9 @@ public class ChatClient {
                 localPeerConnection = null;
             }
 
-//            System.out.println("remoteServerIP: " + remoteServerIP + " | remoteServerPort: " + remoteServerPort
-//                    + " | specifiedLocalPort: " + specifiedLocalPort + " | iPort: " + iPort +
-//                    " | localServerHost: " + localServerHost
-//            );
 
             if (specifiedLocalPort != -1){
+
                 this.socket = new Socket(remoteServerIP, remoteServerPort, null,  specifiedLocalPort);
                 this.socket.setReuseAddress(true);
             } else if (iPort != -1) {
@@ -151,15 +176,22 @@ public class ChatClient {
                 this.socket = new Socket(remoteServerIP, remoteServerPort);
                 this.socket.setReuseAddress(true);
             }
+            this.localPort = String.valueOf(socket.getLocalPort());
             this.remoteServerHost = remoteServerHost;
 
             this.writer = new PrintWriter(this.socket.getOutputStream(), true);
             ServerCommand hostChange = new HostChangeCommand(localServerHost);
             this.writer.println(gson.toJson(hostChange));
-            handle();
+//            this.connectedServer = remoteServerHost;
+            handle(false);
         }
     }
 
+
+
+    public String getLocalPort() {
+        return localPort;
+    }
 
     public void printPrefix() {
         if (!this.runningInBackground){
@@ -171,24 +203,20 @@ public class ChatClient {
         }
     }
 
-    private void handle() throws IOException {
+    private void handle(boolean renew ) throws IOException {
         connected = true;
         try {
+            if (!renew){
+                if (!this.runningInBackground ){
+                    this.clientSender = new ClientSender(socket, this);
+                    clientSender.start();
+                }
 
-            if (!this.runningInBackground){
-                clientSender = new ClientSender(socket, this);
-                clientSender.start();
+                clientReceiver = new ClientReceiver(this);
+                clientReceiver.start();
             }
 
-//            if (runningInBackground){
-//                clientReceiver = new ClientReceiver(this);
-//            }else{
-//                clientReceiver = new ClientReceiver(this);
-//            }
-            clientReceiver = new ClientReceiver(this);
-            clientReceiver.start();
-
-            while (connected && !runningInBackground){
+            while (connected && !runningInBackground && !isMigrating){
                 Thread.sleep(2000);
             }
 
@@ -197,8 +225,6 @@ public class ChatClient {
             /** clientReceiver is a thread responsible for receiving message
              * clientSender is a thread responsible for sending message
              * */
-//            clientReceiver.close();
-//            clientSender.close();
             disconnect();
         }
         finally {
@@ -210,9 +236,12 @@ public class ChatClient {
                 socket.close();
             }
 
-
         }
 
+    }
+
+    public String getRemoteServerHost() {
+        return remoteServerHost;
     }
 
     public void disconnect() throws IOException {
@@ -226,6 +255,7 @@ public class ChatClient {
         }
         connected = false;
     }
+
 
     public void setRoomid(String roomid) {
         this.roomid = roomid;
@@ -258,6 +288,16 @@ public class ChatClient {
 
     public void requestDeleteRoom(String roomid){
         this.roomToDelete = roomid;
+    }
+    public void handleKicked() throws IOException {
+        this.quitFlag = true;
+        try {
+            this.setRoomid("");
+            this.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

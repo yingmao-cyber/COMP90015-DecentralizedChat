@@ -3,6 +3,7 @@ package client;
 import client_command.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import local_command.MigrateRoomCommand;
 import local_command.SearchCommand;
 import server_command.*;
 import server_command.HelpCommand;
@@ -22,11 +23,13 @@ public class CommandFactory {
         this.commandRequiresNoInput.add("list");
         this.commandRequiresNoInput.add("quit");
         this.commandRequiresNoInput.add("help");
+        this.commandRequiresNoInput.add("blockingpeersrequest");
         this.commandRequiresNoInput.add("searchnetwork");
         this.chatClient = chatClient;
         this.localCommandArray.add("createroom");
         this.localCommandArray.add("delete");
         this.localCommandArray.add("kick");
+
     }
 
     /**
@@ -103,6 +106,8 @@ public class CommandFactory {
                     return new QuitCommand();
                 case "searchnetwork":
                     return null;
+                case "migrateroom":
+                    return null;
                 default:
                     if (!localCommandArray.contains(type) ){
                         System.out.println("Command " + userInput + " is invalid.");
@@ -143,6 +148,13 @@ public class CommandFactory {
                 return this.generateCommand(jsonMessage, RoomContentsCommand.class);
             case "roomlist":
                 return this.generateCommand(jsonMessage, RoomListCommand.class);
+            case "blockingpeers":
+                return this.generateCommand(jsonMessage, BlockingPeersCommand.class);
+            case "migratetonewpeer":
+                return this.generateCommand(jsonMessage, MigrateToNewPeerCommand.class);
+            case "migrateroomsuccessfully":
+                return this.generateCommand(jsonMessage, MigrateRoomSuccessfulCommand.class);
+
             default:
                 return null;
         }

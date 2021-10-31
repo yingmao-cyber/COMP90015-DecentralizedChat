@@ -42,6 +42,12 @@ public class CommandFactory {
                 return this.generateCommand(jsonMessage, ListCommand.class);
             case "quit":
                 return this.generateCommand(jsonMessage, QuitCommand.class);
+            case "blockingpeersrequest":
+                return this.generateCommand(jsonMessage, BlockingPeersRequestCommand.class);
+            case "connectionfailed":
+                return this.generateCommand(jsonMessage, ConnectionFailedCommand.class);
+            case "migrationrequest":
+                return this.generateCommand(jsonMessage, MigrationRequestCommand.class);
             default:
                 return null;
         }

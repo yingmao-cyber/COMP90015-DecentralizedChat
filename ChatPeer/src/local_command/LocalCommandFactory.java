@@ -1,6 +1,7 @@
 package local_command;
 
 import client.ChatClient;
+import server_command.BlockingPeersRequestCommand;
 
 import java.util.ArrayList;
 
@@ -15,6 +16,7 @@ public class LocalCommandFactory {
         commandWithOneArg.add("delete");
         commandWithOneArg.add("createroom");
         commandWithOneArg.add("kick");
+        commandWithOneArg.add("migrateroom");
         commandWithZeroArg.add("searchnetwork");
     }
 
@@ -74,6 +76,8 @@ public class LocalCommandFactory {
                     return new DeleteCommand(argOne);
                 case "searchnetwork":
                     return new SearchCommand();
+                case "migrateroom":
+                    return new MigrateRoomCommand(argOne);
                 case "kick":
                     if (inputArray.size() == 1){
                         System.out.println("Command " + userInput + " is invalid.");

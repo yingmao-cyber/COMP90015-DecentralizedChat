@@ -5,11 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+
 import com.google.gson.Gson;
+import local_command.MigrateRoomCommand;
 import local_command.SearchCommand;
 import server_command.ServerCommand;
 
-class ClientSender extends Thread{
+public class ClientSender extends Thread{
     private Socket socket;
     private ChatClient chatClient;
     private PrintWriter writer;
@@ -65,6 +68,27 @@ class ClientSender extends Thread{
                     else if (str.equals("#searchnetwork")){
                         SearchCommand s = new SearchCommand();
                         s.execute(chatClient, chatClient.getChatManager());
+                    }
+                    else{
+
+                        String[] userInputs = str.split(" ");
+                        ArrayList<String> inputArray = new ArrayList<>();
+                        /** remove the empty spaces before the first input */
+                        for (String input: userInputs){
+                            if (input.length() > 0){
+                                inputArray.add(input);
+                            }
+                        }
+                        int inputLength = inputArray.size();
+                        if (inputArray.get(0).equals("#migrateroom")){
+                            if(inputLength != 2){
+                                System.out.println("Command " + userInput + " is invalid!!");
+                            }else{
+                                MigrateRoomCommand migrateRoomCommand = new MigrateRoomCommand(inputArray.get(1));
+                                migrateRoomCommand.execute(chatClient,chatClient.getChatManager());
+                            }
+                        }
+
                     }
                     chatClient.printPrefix();
                 }

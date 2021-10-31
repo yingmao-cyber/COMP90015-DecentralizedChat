@@ -4,6 +4,8 @@ package server;
 import client.ChatClient;
 import client_command.ClientCommand;
 
+import java.io.IOException;
+
 
 public class LocalPeerConnection implements IConnection{
     private String currentChatRoom = "";
@@ -12,14 +14,17 @@ public class LocalPeerConnection implements IConnection{
     private ChatManager chatManager;
     private client.CommandFactory clientCommandFactory;
     private ChatClient chatClient;
+    private ChatServer chatServer;
 
     public LocalPeerConnection(ChatClient chatClient,
-                               ChatManager chatManager, client.CommandFactory clientCommandFactory, String identity){
+                               ChatManager chatManager, client.CommandFactory clientCommandFactory, String identity, ChatServer c){
         this.chatClient = chatClient;
         this.identity = identity;
         this.chatManager = chatManager;
         this.clientCommandFactory = clientCommandFactory;
+        this.chatServer = c;
     }
+
 
     public ChatManager getChatManager() {
         return chatManager;
@@ -28,6 +33,11 @@ public class LocalPeerConnection implements IConnection{
     @Override
     public String getConnType() {
         return connType;
+    }
+
+    @Override
+    public ChatServer getChatServer() {
+        return chatServer;
     }
 
 
@@ -47,7 +57,7 @@ public class LocalPeerConnection implements IConnection{
         this.currentChatRoom = currentChatRoom;
     }
 
-    public void sendMessage(String message){
+    public void sendMessage(String message) throws IOException {
         ClientCommand clientCommand = clientCommandFactory.convertServerMessageToCommand(message);
         if (clientCommand != null){
             clientCommand.execute(chatClient);
