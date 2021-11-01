@@ -196,12 +196,13 @@ public class ChatClient {
                     this.socket = new Socket(remoteServerIP, remoteServerPort, null, iPort);
                     this.socket.setReuseAddress(true);
                 }catch(BindException e) {
-                    System.out.println("Connection to server " +  remoteServerPort +  " failed");
+                    System.out.println("Connection to server " +  remoteServerPort +  " failed due to BindException.");
                     System.out.println("For reconnection, BindException:Address already in use may happen occasionally.");
                     System.out.println("This is due to socket.close() may set socket in time_wait state.");
                     System.out.println("As a workaround, a random local port is used.");
                     this.socket = new Socket(remoteServerIP, remoteServerPort, null, randomPortGeneration());
                     this.socket.setReuseAddress(true);
+                    System.out.println("Connection to server " +  remoteServerPort +  " succesfully with new local port.");
 //                    e.printStackTrace();
                 } catch (Exception e){
                     e.printStackTrace();
