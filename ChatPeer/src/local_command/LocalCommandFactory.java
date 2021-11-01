@@ -1,7 +1,6 @@
 package local_command;
 
 import client.ChatClient;
-import server_command.BlockingPeersRequestCommand;
 
 import java.util.ArrayList;
 

@@ -16,9 +16,10 @@ public class SearchCommand extends LocalCommand{
     private final String type = "searchnetwork";
     @Override
     public void execute(ChatClient chatClient, ChatManager chatManager) throws IOException, InterruptedException {
-        System.out.println("Start Searching");
+//        System.out.println("Start Searching");
         HashMap<IConnection, String> peers = chatManager.getClientConnectionList();
         HashMap<String, Boolean> isExplored = new HashMap<>();
+        HashMap<String, String> roomSearched = new HashMap<>();
         String localServerHost = chatClient.getLocalServerHost();
         isExplored.put(localServerHost, true);
         Queue<String> searchQueue = new LinkedList();
@@ -65,7 +66,7 @@ public class SearchCommand extends LocalCommand{
                 e.printStackTrace();
             }
             List<RoomListCommand.RoomInfo> recvRooms = chatManager.getRecvRoomInfo();
-            System.out.println(currentSearchPeer + " Rooms:");
+//            System.out.println(currentSearchPeer + " Rooms:");
             StringBuilder print = new StringBuilder();
             for (RoomListCommand.RoomInfo room: recvRooms){
                 int noOfGuests = room.getCount();
@@ -75,7 +76,8 @@ public class SearchCommand extends LocalCommand{
             }
             chatManager.clearRecvRoomInfos();
             String printStr = print.toString().stripTrailing();
-            System.out.println(printStr);
+//            System.out.println(printStr);
+            roomSearched.put(currentSearchPeer, printStr);
 
             QuitCommand q = new QuitCommand();
             c.setQuitFlag(true);
@@ -83,6 +85,11 @@ public class SearchCommand extends LocalCommand{
             c.getWriter().println(gson.toJson((q)));
             c.getClientReceiver().setConnection_alive(false);
         }
-        System.out.println("End Search");
+
+        for (Map.Entry<String, String> searchedInfo: roomSearched.entrySet()){
+            System.out.println(searchedInfo.getKey() + " Rooms:");
+            System.out.println(searchedInfo.getValue());
+        }
+//        System.out.println("End Search");
     }
 }

@@ -46,7 +46,7 @@ public class ClientReceiver extends Thread{
             try {
                 String str = reader.readLine();
                 if (str == null ){
-                    if(! chatClient.isRunningInBackground()){
+                    if(!chatClient.isRunningInBackground()){
                         System.out.println("\nWARNING: Server has closed the connection!");
                     }
                     this.connection_alive = false;

@@ -3,8 +3,6 @@ package client;
 import client_command.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import local_command.MigrateRoomCommand;
-import local_command.SearchCommand;
 import server_command.*;
 import server_command.HelpCommand;
 
@@ -88,6 +86,7 @@ public class CommandFactory {
                 case "join":
                     return new JoinCommand(arg);
                 case "listneighbors":
+                    chatClient.setListNeighborCalled(true);
                     return new ListNeighborCommand();
                 case "who":
                     return new WhoCommand(arg);

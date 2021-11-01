@@ -17,7 +17,7 @@ public class KickCommand extends LocalCommand{
         if (result) {
             System.out.println("Peer " + peerId + " is blocked.");
         } else {
-            System.out.println("Peer " + peerId + "block failed");
+            System.out.println("Peer " + peerId + " block failed");
         }
     }
 }

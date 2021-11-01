@@ -19,7 +19,6 @@ public class RoomListCommand extends ClientCommand{
     }
     @Override
     public void execute(ChatClient chatClient) {
-
         chatClient.getChatManager().setRecvRoomInfo(rooms);
 
         String requestNewRoomId = chatClient.getRoomToCreate();

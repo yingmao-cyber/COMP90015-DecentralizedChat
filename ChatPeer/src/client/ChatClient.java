@@ -32,6 +32,7 @@ public class ChatClient {
     private String connectedServer;
     private String localPort;
     private boolean isMigrating;
+    private boolean isListNeighborCalled = false;
 
     public ChatClient(ChatManager chatManager, String localServerHost, int iPort){
         this.localServerHost = localServerHost;
@@ -48,6 +49,14 @@ public class ChatClient {
         if (!migrating){
             handle(true);
         }
+    }
+
+    public void setListNeighborCalled(boolean listNeighborCalled) {
+        isListNeighborCalled = listNeighborCalled;
+    }
+
+    public boolean getListNeighborCalled() {
+        return isListNeighborCalled;
     }
 
     public boolean isMigrating() {

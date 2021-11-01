@@ -17,9 +17,15 @@ public class NeighborCommand extends ClientCommand {
 
         chatClient.getChatManager().setRecvNeighbors(neighbors);
 
-        if (!chatClient.isConnectedLocally()){
-            System.out.println();
+        if (chatClient.getListNeighborCalled()){
+            if (!chatClient.isConnectedLocally()){
+                System.out.println();
+            }
+            System.out.println("neighbors: " + neighbors);
         }
+
+        chatClient.setListNeighborCalled(false);
+
         if (!chatClient.isConnectedLocally()){
             chatClient.printPrefix();
         }

@@ -88,6 +88,7 @@ public class ChatManager {
 
     public void setRecvRoomInfo(List<RoomListCommand.RoomInfo> recvRoomInfo) {
         synchronized (this.recvRoomInfo){
+            this.recvRoomInfo.clear();
             this.recvRoomInfo.addAll(recvRoomInfo);
             this.recvRoomInfo.notify();
         }
