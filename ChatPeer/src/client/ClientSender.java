@@ -31,17 +31,17 @@ public class ClientSender extends Thread{
         this.userInput = new BufferedReader(new InputStreamReader(System.in));
 
         // autoFlush = true means send the data immediately when receiving the input
-        this.writer = new PrintWriter(this.socket.getOutputStream(), true);
+//        this.writer = new PrintWriter(this.socket.getOutputStream(), true);
+        this.writer = chatClient.getWriter();
     }
 
     public void setConnection_alive(boolean connection_alive) {
         this.connection_alive = connection_alive;
     }
 
-    public void close() {
+    public void close(){
         this.connection_alive = false;
     }
-
 
     /**
      * Send message to server
@@ -70,7 +70,6 @@ public class ClientSender extends Thread{
                         s.execute(chatClient, chatClient.getChatManager());
                     }
                     else{
-
                         String[] userInputs = str.split(" ");
                         ArrayList<String> inputArray = new ArrayList<>();
                         /** remove the empty spaces before the first input */

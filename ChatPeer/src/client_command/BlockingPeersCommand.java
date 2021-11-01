@@ -14,7 +14,7 @@ public class BlockingPeersCommand extends ClientCommand{
 
     @Override
     public void execute(ChatClient chatClient) {
-        System.out.println("recv blocking peers command");
+//        System.out.println("recv blocking peers command");
         chatClient.getChatManager().setRecvServerBlockingPeers(blockingIdentities);
         chatClient.getChatManager().setReceivedBlockingPeers(true);
     }

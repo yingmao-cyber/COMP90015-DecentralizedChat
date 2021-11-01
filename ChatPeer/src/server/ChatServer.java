@@ -52,6 +52,7 @@ public class ChatServer extends Thread{
             alive = true;
             while (alive){
                 Socket soc = serverSocket.accept();
+                soc.setReuseAddress(true);
                 String socAddr = soc.getRemoteSocketAddress().toString();
                 String peerIdentity = formatIPAddr(socAddr);
                 String[] peerId = peerIdentity.split(":");

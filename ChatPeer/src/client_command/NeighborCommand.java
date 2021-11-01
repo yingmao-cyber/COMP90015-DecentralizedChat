@@ -3,7 +3,6 @@ package client_command;
 import client.ChatClient;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class NeighborCommand extends ClientCommand {
     private ArrayList<String> neighbors;

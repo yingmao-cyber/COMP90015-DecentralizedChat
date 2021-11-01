@@ -4,11 +4,14 @@ import com.google.gson.Gson;
 import server.ChatManager;
 import server.LocalPeerConnection;
 import server_command.HostChangeCommand;
+import server_command.JoinCommand;
 import server_command.ServerCommand;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.BindException;
 import java.net.Socket;
+import java.util.Random;
 
 public class ChatClient {
     private Socket socket;
@@ -31,8 +34,10 @@ public class ChatClient {
     private boolean runningInBackground = false;
     private String connectedServer;
     private String localPort;
-    private boolean isMigrating;
+    private boolean isMigrating = false;
     private boolean isListNeighborCalled = false;
+    private boolean isMigrated;
+    private Random random = new Random();
 
     public ChatClient(ChatManager chatManager, String localServerHost, int iPort){
         this.localServerHost = localServerHost;
@@ -46,9 +51,9 @@ public class ChatClient {
 
     public void setMigrating(boolean migrating) throws IOException {
         isMigrating = migrating;
-        if (!migrating){
-            handle(true);
-        }
+//        if (!migrating){
+//            handle(true);
+//        }
     }
 
     public void setListNeighborCalled(boolean listNeighborCalled) {
@@ -57,6 +62,14 @@ public class ChatClient {
 
     public boolean getListNeighborCalled() {
         return isListNeighborCalled;
+    }
+
+    public boolean isMigrated(){
+        return isMigrated;
+    }
+
+    public void setMigrated(boolean isMigrated){
+        this.isMigrated = isMigrated;
     }
 
     public boolean isMigrating() {
@@ -136,6 +149,12 @@ public class ChatClient {
         return writer;
     }
 
+    public int randomPortGeneration(){
+        int low = 1000;
+        int high = 9999;
+        return random.nextInt(high-low) + low;
+    }
+
     /** Connect to peer server:
      * remoteServerHost: 142.250.70,.238
      * remoteServerListeningPort: 4444
@@ -145,6 +164,8 @@ public class ChatClient {
      * */
     public void makeConnection(String remoteServerHost, int specifiedLocalPort) throws IOException {
         // new connection request will be ignored if client is currently connected to a remote server
+        this.isMigrated = false;
+        this.isMigrating = false;
         if (!this.runningInBackground){
             System.out.println("connect to " + remoteServerHost);
         }
@@ -174,11 +195,16 @@ public class ChatClient {
                 try{
                     this.socket = new Socket(remoteServerIP, remoteServerPort, null, iPort);
                     this.socket.setReuseAddress(true);
-                }catch(Exception e) {
+                }catch(BindException e) {
                     System.out.println("Connection to server " +  remoteServerPort +  " failed");
-                    disconnect();
+                    System.out.println("For reconnection, BindException:Address already in use may happen occasionally.");
+                    System.out.println("This is due to socket.close() may set socket in time_wait state.");
+                    System.out.println("As a workaround, a random local port is used.");
+                    this.socket = new Socket(remoteServerIP, remoteServerPort, null, randomPortGeneration());
+                    this.socket.setReuseAddress(true);
+//                    e.printStackTrace();
+                } catch (Exception e){
                     e.printStackTrace();
-                    return;
                 }
 
             } else {
@@ -191,6 +217,8 @@ public class ChatClient {
             this.writer = new PrintWriter(this.socket.getOutputStream(), true);
             ServerCommand hostChange = new HostChangeCommand(localServerHost);
             this.writer.println(gson.toJson(hostChange));
+            JoinCommand joinCommand = new JoinCommand(roomid);
+            this.writer.println(gson.toJson((joinCommand)));
 //            this.connectedServer = remoteServerHost;
             handle(false);
         }
@@ -225,10 +253,9 @@ public class ChatClient {
                 clientReceiver.start();
             }
 
-            while (connected && !runningInBackground && !isMigrating){
+            while (connected && !runningInBackground && !isMigrating && !isMigrated){
                 Thread.sleep(2000);
             }
-
         } catch (InterruptedException e){
             System.out.println("Connection is interrupted");
             /** clientReceiver is a thread responsible for receiving message
@@ -239,6 +266,9 @@ public class ChatClient {
         finally {
             if (socket != null && ! runningInBackground){
                 System.out.println("Disconnected from localhost");
+                if (this.isMigrating){
+                    this.isMigrated = true;
+                }
             }
             else if (!runningInBackground){
                 System.out.println("Connection failed");

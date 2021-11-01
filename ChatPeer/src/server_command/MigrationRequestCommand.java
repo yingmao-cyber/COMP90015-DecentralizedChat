@@ -1,11 +1,9 @@
 package server_command;
 
 import client_command.MigrateRoomSuccessfulCommand;
-import client_command.RoomListCommand;
 import com.google.gson.Gson;
 import server.IConnection;
 
-import java.util.List;
 
 public class MigrationRequestCommand extends ServerCommand{
     private String  migrateRoomId;
@@ -20,6 +18,7 @@ public class MigrationRequestCommand extends ServerCommand{
         System.out.println("Receive migration request");
         Gson gson = new Gson();
         connection.getChatManager().createRoom(migrateRoomId);
+        System.out.println("Migrate room " + migrateRoomId + " created.");
         MigrateRoomSuccessfulCommand migrateRoomSuccessfulCommand = new MigrateRoomSuccessfulCommand();
         String jsonMessage = gson.toJson(migrateRoomSuccessfulCommand);
         connection.getChatManager().sendToOneClient(jsonMessage, connection);

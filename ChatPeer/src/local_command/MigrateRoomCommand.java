@@ -12,7 +12,6 @@ import server_command.QuitCommand;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 
 /**
@@ -32,12 +31,13 @@ public class MigrateRoomCommand extends LocalCommand{
         // check if the userpeer is connected to another peer
         if (chatClient.getRemoteServerHost() == null){
             System.out.println("You don't have neighbors to migrate the room, connect to a peer first");
+            System.out.println("If peer A owns roomA, peer A must connect to peer B to migrate roomA to B.");
             return;
         }
 
         // check if the room exists
         if (!chatManager.hasChatRoom(roomid)){
-            System.out.println("You don't have this room");
+            System.out.println("You don't own this room");
             return;
         }
         Gson gson = new Gson();
@@ -48,7 +48,7 @@ public class MigrateRoomCommand extends LocalCommand{
 //        c.setMigrating(true);
         boolean migrateSuccessfully = false;
 
-        //send blockingPeersRequest to see if the candidate is valud
+        //send blockingPeersRequest to see if the candidate is valid
         if (migrateCandidate != null){
             chatManager.clearRecvServerBlockingPeers();
             BlockingPeersRequestCommand blockingPeersRequestCommand = new BlockingPeersRequestCommand();
@@ -57,11 +57,13 @@ public class MigrateRoomCommand extends LocalCommand{
                 migrateSuccessfully = tryMigration(migrateCandidate, chatManager, chatClient);
             }
         }
-        System.out.println(migrateSuccessfully);
-
+        if (migrateSuccessfully){
+            System.out.println("migrated " + roomid + " successfully");
+            chatManager.removeRoom(roomid);
+            return;
+        }
         // if the migration is failed, send a listNeighbourRequest to see if there are other candidates
-
-        if (!migrateSuccessfully){
+        else{
 
             ListNeighborCommand listNeighborCommand = new ListNeighborCommand();
             chatClient.getWriter().println(gson.toJson(listNeighborCommand));
@@ -139,7 +141,7 @@ public class MigrateRoomCommand extends LocalCommand{
         MigrationRequestCommand migrationRequestCommand = new MigrationRequestCommand(roomid);
         Gson gson = new Gson();
         String s = gson.toJson(migrationRequestCommand);
-        System.out.println(s);
+//        System.out.println(s);
         PrintWriter w = c.getWriter();
         w.println(s);
         int count = 0;
@@ -154,13 +156,11 @@ public class MigrateRoomCommand extends LocalCommand{
             chatManager.setConnectionFailedAlert(false);
             ArrayList<IConnection> peersInRoom = chatManager.getChatRooms(roomid);
             for (IConnection peer: peersInRoom){
-                c.makeConnection(peer.getName(), -1);
-                MigrateToNewPeerCommand migrateToNewPeerCommand = new MigrateToNewPeerCommand( candidate,roomid,c.getLocalServerHost());
-                QuitCommand q = new QuitCommand();
-                c.setQuitFlag(true);
-                c.getSocket().close();
-                c.getWriter().println(gson.toJson((q)));
-                c.getClientReceiver().setConnection_alive(false);
+                MigrateToNewPeerCommand migrateToNewPeerCommand = new
+                        MigrateToNewPeerCommand(candidate,roomid,c.getLocalServerHost());
+                String jsonMessage = gson.toJson(migrateToNewPeerCommand);
+                ChatManager peerChatManager = peer.getChatManager();
+                peerChatManager.sendToOneClient(jsonMessage, peer);
             }
             count = 0;
             while (!chatManager.isConnectionFailedAlert() && count < 5){
